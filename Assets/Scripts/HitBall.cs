@@ -10,17 +10,23 @@ public class HitBall : Agent
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.TryGetComponent<Ball>(out Ball ball) )
-        {
-            SetReward(1f);
-            EndEpisode();
-        }
         if(other.TryGetComponent<Wall>(out Wall wall) )
         {
             SetReward(-1f);
             EndEpisode();
         }
     }
+
+        private void OnCollisionEnter(Collision collision) 
+    {
+        // Use collision.gameObject or collision.collider to get the component
+        if(collision.gameObject.TryGetComponent<Ball>(out Ball ball))
+        {
+            SetReward(1f);
+            EndEpisode();
+        }        
+    }
+
 
     public override void CollectObservations(VectorSensor sensor)
     {
