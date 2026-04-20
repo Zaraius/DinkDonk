@@ -668,7 +668,7 @@ Transform:
   m_GameObject: {fileID: 4495733696161198664}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.7071072, z: -0, w: 0.7071065}
-  m_LocalPosition: {x: 0.24217987, y: 0.19676, z: -1.76597}
+  m_LocalPosition: {x: 0.24, y: 0.19676, z: 6.64}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -707,7 +707,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 228276080a941a3008e50101f5da7459, type: 2}
+  - {fileID: 2100000, guid: c483d3cbc9a80c5c5a67b7b12969e57c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -738,7 +738,7 @@ SphereCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4495733696161198664}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: f504b60b51d15405088587a269064c18, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -772,7 +772,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4495733696161198664}
   serializedVersion: 5
-  m_Mass: 1
+  m_Mass: 0.01
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -931,15 +931,15 @@ MonoBehaviour:
     VectorObservationSize: 6
     NumStackedVectorObservations: 1
     m_ActionSpec:
-      m_NumContinuousActions: 2
+      m_NumContinuousActions: 3
       BranchSizes: 
-    VectorActionSize: 02000000
+    VectorActionSize: 03000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
     hasUpgradedBrainParametersWithActionSpec: 1
   m_Model: {fileID: 5022602860645237092, guid: 5e14b53f5dcaf4c2b9ffcc38f14eb3ed, type: 3}
   m_InferenceDevice: 0
-  m_BehaviorType: 2
+  m_BehaviorType: 0
   m_BehaviorName: HitBall
   TeamId: 0
   m_UseChildSensors: 1
@@ -979,6 +979,10 @@ MonoBehaviour:
   MaxStep: 1000
   ballTransform: {fileID: 3568207795157143287}
   moveSpeed: 3
+  turnSpeed: 180
+  ballServeForce: 6
+  ballSpawnXRange: {x: -3, y: 3}
+  ballSpawnZRange: {x: -3, y: 3}
 --- !u!65 &4860669571978178520
 BoxCollider:
   m_ObjectHideFlags: 0
