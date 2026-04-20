@@ -2,22 +2,22 @@
     "HitBall": {
         "checkpoints": [
             {
-                "steps": 17464,
-                "file_path": "results/ppo/HitBall/HitBall-17464.onnx",
-                "reward": -0.40816326530612246,
-                "creation_time": 1776451232.58807,
+                "steps": 54743,
+                "file_path": "results/ppo/HitBall/HitBall-54743.onnx",
+                "reward": 11.19162784343542,
+                "creation_time": 1776648181.578379,
                 "auxillary_file_paths": [
-                    "results/ppo/HitBall/HitBall-17464.pt"
+                    "results/ppo/HitBall/HitBall-54743.pt"
                 ]
             }
         ],
         "final_checkpoint": {
-            "steps": 17464,
+            "steps": 54743,
             "file_path": "results/ppo/HitBall.onnx",
-            "reward": -0.40816326530612246,
-            "creation_time": 1776451232.58807,
+            "reward": 11.19162784343542,
+            "creation_time": 1776648181.578379,
             "auxillary_file_paths": [
-                "results/ppo/HitBall/HitBall-17464.pt"
+                "results/ppo/HitBall/HitBall-54743.pt"
             ]
         }
     },
