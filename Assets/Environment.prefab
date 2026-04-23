@@ -668,7 +668,7 @@ Transform:
   m_GameObject: {fileID: 4495733696161198664}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.7071072, z: -0, w: 0.7071065}
-  m_LocalPosition: {x: 0.24, y: 0.19676, z: 6.64}
+  m_LocalPosition: {x: 0.24, y: 0.19676, z: 5.39}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -772,9 +772,9 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4495733696161198664}
   serializedVersion: 5
-  m_Mass: 0.01
+  m_Mass: 0.1
   m_LinearDamping: 0
-  m_AngularDamping: 0.05
+  m_AngularDamping: 0
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -978,11 +978,9 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   MaxStep: 1000
   ballTransform: {fileID: 3568207795157143287}
-  moveSpeed: 3
+  moveSpeed: 20
   turnSpeed: 180
-  ballServeForce: 6
-  ballSpawnXRange: {x: -3, y: 3}
-  ballSpawnZRange: {x: -3, y: 3}
+  ballServeForce: 20
 --- !u!65 &4860669571978178520
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1844,7 +1842,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8931579805533490089}
   serializedVersion: 5
-  m_Mass: 1
+  m_Mass: 1000
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
