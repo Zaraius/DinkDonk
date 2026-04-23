@@ -12,7 +12,6 @@ public class HitBall : Agent
     [SerializeField] private float turnSpeed = 180f;
     [SerializeField] private float ballServeForce = 15f;
     private Vector2 ballSpawnXRange = new Vector2(-2.3f, 2.3f);
-    private Vector2 ballSpawnZRange = new Vector2(5.5f, 8.5f);
     private float lastDistanceToBall;
 
     private Rigidbody rb;
@@ -83,14 +82,14 @@ public class HitBall : Agent
     {
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
-        transform.localPosition = new Vector3(Random.Range(-3f, 3f), 0.3f, Random.Range(-7f, -1f));
+        transform.localPosition = new Vector3(Random.Range(0.5f, 1.6f), 0.3f, Random.Range(-8.3f, -7.3f));
         rb.rotation = Quaternion.Euler(0f, 90f, 0f);
 
         Rigidbody ballRb = ballTransform.GetComponent<Rigidbody>();
         Vector3 ballStartPosition = new Vector3(
             Random.Range(ballSpawnXRange.x, ballSpawnXRange.y),
             1f,
-            Random.Range(ballSpawnZRange.x, ballSpawnZRange.y)
+            8f // served on the line
         );
 
         Vector3 serveDirection = new Vector3(
