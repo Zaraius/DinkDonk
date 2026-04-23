@@ -36,13 +36,13 @@ public class HitBall : Agent
         }
     }
 
-        private void OnCollisionEnter(Collision collision) 
+    private void OnCollisionEnter(Collision collision) 
     {
         // Use collision.gameObject or collision.collider to get the component
         if(collision.gameObject.TryGetComponent<Ball>(out Ball ball))
         {
             SetReward(10f);
-            EndEpisode();
+            // EndEpisode();
         }        
     }
 
@@ -60,6 +60,15 @@ public class HitBall : Agent
         float turn = Mathf.Clamp(actions.ContinuousActions[2], -1f, 1f);
         moveInput = new Vector2(moveX, moveZ);
         turnInput = turn;
+
+        // Check if ball hit a wall (went out of bounds)
+        Vector3 ballPos = ballTransform.localPosition;
+        if (ballPos.y < -1f || Mathf.Abs(ballPos.x) > 5f || Mathf.Abs(ballPos.z) > 10f)
+        {
+            SetReward(-1f);
+            EndEpisode();
+            return;
+        }
 
         float distanceToBall = Vector3.Distance(rb.position, ballTransform.position);
         if (distanceToBall < lastDistanceToBall)
