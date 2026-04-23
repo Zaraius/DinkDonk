@@ -10,7 +10,10 @@ public class HitBall : Agent
     [SerializeField] private Transform ballTransform;
     [SerializeField] private float moveSpeed = 20f;
     [SerializeField] private float turnSpeed = 180f;
-    private Vector2 ballSpawnXRange = new Vector2(-2.3f, 2.3f);
+    private Vector2 ballSpawnXRangeLeft = new Vector2(-2.5f, 0f);
+    private Vector2 ballSpawnXRangeRight = new Vector2(0f, 2.5f);
+    private Vector2 targetXRangeLeft = new Vector2(-2.25f, 0f);
+    private Vector2 targetXRangeRight = new Vector2(0f, 2.25f);
     private float lastDistanceToBall;
 
     private Rigidbody rb;
@@ -81,18 +84,27 @@ public class HitBall : Agent
     {
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
-        transform.localPosition = new Vector3(Random.Range(0.5f, 1.6f), 0.3f, Random.Range(-8.3f, -7.3f));
+
+        // Randomly choose left->right or right->left
+        bool spawnLeft = Random.value > 0.5f;
+        Vector2 spawnRange = spawnLeft ? ballSpawnXRangeLeft : ballSpawnXRangeRight;
+        Vector2 targetRange = spawnLeft ? targetXRangeRight : targetXRangeLeft;
+        Vector2 playerRange = spawnLeft ? targetXRangeRight : targetXRangeLeft;
+
+        // Player starts on the opposite half of ball spawn (diagonal)
+        transform.localPosition = new Vector3(Random.Range(playerRange.x, playerRange.y), 0.3f, Random.Range(-8.5f, -7.5f));
         rb.rotation = Quaternion.Euler(0f, 90f, 0f);
 
         Rigidbody ballRb = ballTransform.GetComponent<Rigidbody>();
+
         Vector3 ballStartPosition = new Vector3(
-            Random.Range(ballSpawnXRange.x, ballSpawnXRange.y),
+            Random.Range(spawnRange.x, spawnRange.y),
             1f,
             8f
         );
 
-        // Target landing zone: x: 0 to 2.25, z: -7.5 to -2.5, y: -0.3
-        float targetX = Random.Range(0f, 2.25f);
+        // Target landing zone: z: -7.5 to -2.5, y: -0.3
+        float targetX = Random.Range(targetRange.x, targetRange.y);
         float targetZ = Random.Range(-7.5f, -2.5f);
         float targetY = -0.3f;
         Vector3 targetPosition = new Vector3(targetX, targetY, targetZ);
