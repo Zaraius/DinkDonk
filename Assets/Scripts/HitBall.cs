@@ -6,7 +6,6 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(Rigidbody))]
 public class HitBall : Agent
 {
-    private float heuristicSpeed = 3f;
     [SerializeField] private Transform ballTransform;
     [SerializeField] private float moveSpeed = 20f;
     [SerializeField] private float turnSpeed = 180f;
@@ -76,7 +75,7 @@ public class HitBall : Agent
         Quaternion turnRotation = Quaternion.Euler(0f, turnInput * turnSpeed * Time.fixedDeltaTime, 0f);
         rb.MoveRotation(rb.rotation * turnRotation);
 
-        Vector3 move = (transform.right * moveInput.x + transform.forward * moveInput.y) * moveSpeed * Time.fixedDeltaTime;
+        Vector3 move = new Vector3(moveInput.x, 0, moveInput.y) * moveSpeed * Time.fixedDeltaTime;
         rb.MovePosition(rb.position + move);
     }
 
@@ -147,27 +146,36 @@ public class HitBall : Agent
         ActionSegment<float> continuousActions = actionsOut.ContinuousActions;
         float horizontal = 0f;
         float vertical = 0f;
+        float turn = 0f;
 
         if (Keyboard.current.aKey.isPressed || Keyboard.current.leftArrowKey.isPressed)
         {
-            horizontal -= heuristicSpeed;
+            horizontal -= moveSpeed;
         }
         if (Keyboard.current.dKey.isPressed || Keyboard.current.rightArrowKey.isPressed)
         {
-            horizontal += heuristicSpeed;
+            horizontal += moveSpeed;
         }
         if (Keyboard.current.sKey.isPressed || Keyboard.current.downArrowKey.isPressed)
         {
-            vertical -= heuristicSpeed;
+            vertical -= moveSpeed;
         }
         if (Keyboard.current.wKey.isPressed || Keyboard.current.upArrowKey.isPressed)
         {
-            vertical += heuristicSpeed;
+            vertical += moveSpeed;
+        }
+        if (Keyboard.current.qKey.isPressed)
+        {
+            turn -= turnSpeed;
+        }
+        if (Keyboard.current.eKey.isPressed)
+        {
+            turn += turnSpeed;
         }
 
         continuousActions[0] = horizontal;
         continuousActions[1] = vertical;
-        continuousActions[2] = 0f;
+        continuousActions[2] = turn;
     }
 
     
