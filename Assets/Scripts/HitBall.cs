@@ -10,7 +10,6 @@ public class HitBall : Agent
     [SerializeField] private Transform ballTransform;
     [SerializeField] private float moveSpeed = 20f;
     [SerializeField] private float turnSpeed = 180f;
-    [SerializeField] private float ballServeForce = 15f;
     private Vector2 ballSpawnXRange = new Vector2(-2.3f, 2.3f);
     private float lastDistanceToBall;
 
@@ -89,14 +88,27 @@ public class HitBall : Agent
         Vector3 ballStartPosition = new Vector3(
             Random.Range(ballSpawnXRange.x, ballSpawnXRange.y),
             1f,
-            8f // served on the line
+            8f
         );
 
-        Vector3 serveDirection = new Vector3(
-            Random.Range(-0.35f, 0.35f),
-            Random.Range(-0.45f, -0.15f),
-            Random.Range(-1f, -0.65f)
-        ).normalized;
+        // Target landing zone: x: 0 to 2.25, z: -7.5 to -2.5, y: -0.3
+        float targetX = Random.Range(0f, 2.25f);
+        float targetZ = Random.Range(-7.5f, -2.5f);
+        float targetY = -0.3f;
+        Vector3 targetPosition = new Vector3(targetX, targetY, targetZ);
+
+        // Calculate required velocity for projectile motion
+        float timeOfFlight = 1.2f;
+        float g = Physics.gravity.y;
+
+        // Vertical velocity needed to reach target Y at timeOfFlight
+        float vy = (targetPosition.y - ballStartPosition.y - 0.5f * g * timeOfFlight * timeOfFlight) / timeOfFlight;
+
+        // Horizontal velocities
+        float vx = (targetPosition.x - ballStartPosition.x) / timeOfFlight;
+        float vz = (targetPosition.z - ballStartPosition.z) / timeOfFlight;
+
+        Vector3 serveVelocity = new Vector3(vx, vy, vz);
 
         if (ballRb != null)
         {
@@ -104,7 +116,7 @@ public class HitBall : Agent
             ballRb.angularVelocity = Vector3.zero;
             ballTransform.localPosition = ballStartPosition;
             ballTransform.localRotation = Quaternion.identity;
-            ballRb.AddForce(serveDirection * ballServeForce, ForceMode.VelocityChange);
+            ballRb.linearVelocity = serveVelocity;
         }
         else
         {
