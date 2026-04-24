@@ -181,6 +181,11 @@ public class HitBall : Agent
             ballTransform.localPosition = ballStartPosition;
             ballTransform.localRotation = Quaternion.identity;
 
+            // Explicitly reset Y velocity/force
+            Vector3 resetVelocity = ballRb.linearVelocity;
+            resetVelocity.y = 0f;
+            ballRb.linearVelocity = resetVelocity;
+
             // Set serve velocity
             ballRb.linearVelocity = serveVelocity;
         }
