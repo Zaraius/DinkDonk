@@ -31,6 +31,8 @@ public class HitBall : Agent
     private bool ballWasAboveGroundLastFrame = false;
     private bool ballInOpponentCourt = false;
     private bool ballWasInOpponentCourtLastFrame = false;
+    private bool ballJustHit = false;
+    private bool firstBounceChecked = false;
 
 
     private void Start()
@@ -53,6 +55,8 @@ public class HitBall : Agent
     public void OnBallHit()
     {
         SetReward(10f);
+        ballJustHit = true;
+        firstBounceChecked = false;
     }
 
 
@@ -99,6 +103,23 @@ public class HitBall : Agent
         {
             bounceCount++;
             Debug.Log($"Ground bounce: {bounceCount}");
+
+            // Check first bounce bounds after paddle hit
+            if (ballJustHit && !firstBounceChecked)
+            {
+                firstBounceChecked = true;
+                bool withinXBounds = ballPos.x >= courtMinX && ballPos.x <= courtMaxX;
+                bool withinZBounds = ballPos.z >= courtMinZ && ballPos.z <= courtMaxZ;
+
+                if (!withinXBounds || !withinZBounds)
+                {
+                    Debug.Log($"First bounce out of bounds! X: {ballPos.x}, Z: {ballPos.z}");
+                    SetReward(-3f);
+                    EndEpisode();
+                    return;
+                }
+                ballJustHit = false;
+            }
 
             // Penalty if too many bounces on player's side
             if (bounceCount > 2)
@@ -219,6 +240,8 @@ public class HitBall : Agent
         paddleRotationInput = 0f;
         bounceCount = 0;
         ballWasAboveGroundLastFrame = false;
+        ballJustHit = false;
+        firstBounceChecked = false;
 
         if (paddleTransform != null)
         {
