@@ -3,7 +3,7 @@ using UnityEngine;
 public class Paddle : MonoBehaviour
 {
     private HitBall hitBallAgent;
-    [SerializeField] private float hitPowerMultiplier = 0.000001f;
+    [SerializeField] private float hitPowerMultiplier = 0.01;
     [SerializeField] private float minHitSpeed = 0.5f;
     private const float maxUpwardForce = 0.65f;
     private const float maxTiltAngle = 45f;
@@ -53,9 +53,10 @@ public class Paddle : MonoBehaviour
                 // Get paddle tilt angle and map to upward force
                 float paddleTilt = transform.localEulerAngles.z;
                 paddleTilt = NormalizeAngle(paddleTilt);
-                paddleTilt = Mathf.Clamp(paddleTilt, 0f, maxTiltAngle);
+                paddleTilt = Mathf.Clamp(paddleTilt, -maxTiltAngle, 0f);
 
-                float normalizedTilt = paddleTilt / maxTiltAngle;
+                // Map -45 to 0 range to 0 to 0.65 force
+                float normalizedTilt = Mathf.Abs(paddleTilt) / maxTiltAngle;
                 float upwardForce = normalizedTilt * maxUpwardForce;
 
                 // Apply speed

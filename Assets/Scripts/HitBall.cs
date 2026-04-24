@@ -86,7 +86,7 @@ public class HitBall : Agent
             Vector3 currentEuler = paddleTransform.localEulerAngles;
             float newZRotation = currentEuler.z + paddleRotationInput * paddleRotationSpeed * Time.fixedDeltaTime;
             newZRotation = NormalizeAngle(newZRotation);
-            newZRotation = Mathf.Clamp(newZRotation, 0f, 45f);
+            newZRotation = Mathf.Clamp(newZRotation, -45f, 0f);
             paddleTransform.localEulerAngles = new Vector3(currentEuler.x, currentEuler.y, newZRotation);
         }
     }

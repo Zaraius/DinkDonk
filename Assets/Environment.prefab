@@ -1011,7 +1011,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: -0.18566658, w: 0.98261285}
   m_LocalPosition: {x: -0.102666855, y: 0, z: 1.24}
-  m_LocalScale: {x: 0.21088704, y: 3.7442229, z: 3.8851044}
+  m_LocalScale: {x: 0.21088704, y: 1.1232672, z: 1.1655312}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2860477696823064696}
@@ -1133,9 +1133,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7df4d15b945e441da9bc4630d8f8467, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Paddle
-  hitPowerMultiplier: 0.000001
+  hitPowerMultiplier: 0.1
   minHitSpeed: 0.5
-  upwardForce: -0.65
 --- !u!1 &6556884990968768355
 GameObject:
   m_ObjectHideFlags: 0
