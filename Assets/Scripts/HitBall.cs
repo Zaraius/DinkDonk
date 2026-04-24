@@ -22,6 +22,8 @@ public class HitBall : Agent
     private float paddleRotationInput;
     private int bounceCount = 0;
     private bool ballWasAboveGroundLastFrame = false;
+    private bool ballInOpponentCourt = false;
+    private bool ballWasInOpponentCourtLastFrame = false;
 
 
     private void Start()
@@ -69,6 +71,17 @@ public class HitBall : Agent
             EndEpisode();
             return;
         }
+
+        // Track which court the ball is in
+        ballInOpponentCourt = ballPos.z > 0f;
+
+        // Reset bounce count when ball crosses half-court
+        if (ballInOpponentCourt != ballWasInOpponentCourtLastFrame)
+        {
+            bounceCount = 0;
+            Debug.Log($"Ball crossed half-court. Bounce count reset to 0");
+        }
+        ballWasInOpponentCourtLastFrame = ballInOpponentCourt;
 
         // Debug.Log("y: " + ballPos.y);
         // Debug.Log("ballWasAboveGroundLastFrame: " + ballWasAboveGroundLastFrame);
