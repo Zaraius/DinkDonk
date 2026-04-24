@@ -15,10 +15,13 @@ public class HitBall : Agent
     private Vector2 targetXRangeLeft = new Vector2(-2.25f, 0f);
     private Vector2 targetXRangeRight = new Vector2(0f, 2.25f);
     private float lastDistanceToBall;
+    private const float groundLevel = -0.3f;
 
     private Rigidbody rb;
     private Vector2 moveInput;
     private float paddleRotationInput;
+    private int bounceCount = 0;
+    private bool ballWasAboveGroundLastFrame = false;
 
 
     private void Start()
@@ -66,6 +69,28 @@ public class HitBall : Agent
             EndEpisode();
             return;
         }
+
+        // Debug.Log("y: " + ballPos.y);
+        // Debug.Log("ballWasAboveGroundLastFrame: " + ballWasAboveGroundLastFrame);
+        // Debug.Log("ballAtGround: " + (Mathf.Abs(ballPos.y - groundLevel) < 0.1f));
+        // Detect ground bounce (ball at Y = -0.3)
+        bool ballAtGround = Mathf.Abs(ballPos.y - groundLevel) < 0.1f;
+        if (ballAtGround && ballWasAboveGroundLastFrame)
+        {
+            bounceCount++;
+            Debug.Log($"Ground bounce: {bounceCount}");
+
+            // Penalty if too many bounces on player's side
+            if (bounceCount > 2)
+            {
+                SetReward(-2f);
+                EndEpisode();
+                return;
+            }
+        }
+
+        // Update ball height tracking
+        ballWasAboveGroundLastFrame = ballPos.y > groundLevel;
 
         float distanceToBall = Vector3.Distance(rb.position, ballTransform.position);
         if (distanceToBall < lastDistanceToBall)
@@ -160,6 +185,8 @@ public class HitBall : Agent
 
         moveInput = Vector2.zero;
         paddleRotationInput = 0f;
+        bounceCount = 0;
+        ballWasAboveGroundLastFrame = false;
 
         if (paddleTransform != null)
         {
