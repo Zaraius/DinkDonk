@@ -66,7 +66,6 @@ public class Paddle : MonoBehaviour
                 // Add upward force mapped from paddle tilt
                 hitForce.y += upwardForce;
 
-                Debug.Log($"PADDLE HIT! Tilt: {paddleTilt:F1}°, Y-Force: {upwardForce:F3}, Total-Force: {hitForce.magnitude:F2}");
                 ballRb.AddForce(hitForce, ForceMode.Impulse);
             }
         }
