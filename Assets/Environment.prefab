@@ -772,7 +772,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4495733696161198664}
   serializedVersion: 5
-  m_Mass: 0.0001
+  m_Mass: 0.1
   m_LinearDamping: 0
   m_AngularDamping: 0
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -930,9 +930,9 @@ MonoBehaviour:
     VectorObservationSize: 6
     NumStackedVectorObservations: 1
     m_ActionSpec:
-      m_NumContinuousActions: 4
+      m_NumContinuousActions: 3
       BranchSizes: 
-    VectorActionSize: 04000000
+    VectorActionSize: 03000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
     hasUpgradedBrainParametersWithActionSpec: 1
@@ -979,7 +979,6 @@ MonoBehaviour:
   ballTransform: {fileID: 3568207795157143287}
   paddleTransform: {fileID: 7213323008741212684}
   moveSpeed: 5
-  turnSpeed: 180
   paddleRotationSpeed: 90
 --- !u!1 &5599911934389959463
 GameObject:
@@ -994,6 +993,7 @@ GameObject:
   - component: {fileID: 1865468896907966273}
   - component: {fileID: 1045535909351902097}
   - component: {fileID: 7114390407758091265}
+  - component: {fileID: 7246484726418255919}
   m_Layer: 0
   m_Name: Paddle
   m_TagString: Untagged
@@ -1080,7 +1080,7 @@ BoxCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5599911934389959463}
-  m_Material: {fileID: 13400000, guid: 91127c554b4c5407aa0ad2f1f795a9e2, type: 2}
+  m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -1092,7 +1092,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.5, y: 1, z: 1}
+  m_Size: {x: 1.8, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &7114390407758091265
 Rigidbody:
@@ -1102,7 +1102,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5599911934389959463}
   serializedVersion: 5
-  m_Mass: 1000
+  m_Mass: 0.01
   m_LinearDamping: 0
   m_AngularDamping: 0
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -1116,11 +1116,26 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 1
+  m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 2
+  m_CollisionDetection: 1
+--- !u!114 &7246484726418255919
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5599911934389959463}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7df4d15b945e441da9bc4630d8f8467, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Paddle
+  hitPowerMultiplier: 0.000001
+  minHitSpeed: 0.5
+  upwardForce: -0.65
 --- !u!1 &6556884990968768355
 GameObject:
   m_ObjectHideFlags: 0

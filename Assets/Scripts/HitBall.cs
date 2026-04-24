@@ -9,7 +9,6 @@ public class HitBall : Agent
     [SerializeField] private Transform ballTransform;
     [SerializeField] private Transform paddleTransform;
     [SerializeField] private float moveSpeed = 20f;
-    [SerializeField] private float turnSpeed = 180f;
     [SerializeField] private float paddleRotationSpeed = 90f;
     private Vector2 ballSpawnXRangeLeft = new Vector2(-2.5f, 0f);
     private Vector2 ballSpawnXRangeRight = new Vector2(0f, 2.5f);
@@ -19,8 +18,8 @@ public class HitBall : Agent
 
     private Rigidbody rb;
     private Vector2 moveInput;
-    private float turnInput;
     private float paddleRotationInput;
+
 
     private void Start()
     {
@@ -39,14 +38,9 @@ public class HitBall : Agent
         }
     }
 
-    private void OnCollisionEnter(Collision collision) 
+    public void OnBallHit()
     {
-        // Use collision.gameObject or collision.collider to get the component
-        if(collision.gameObject.TryGetComponent<Ball>(out Ball ball))
-        {
-            SetReward(10f);
-            // EndEpisode();
-        }        
+        SetReward(10f);
     }
 
 
@@ -60,15 +54,13 @@ public class HitBall : Agent
     {
         float moveX = Mathf.Clamp(actions.ContinuousActions[0], -1f, 1f);
         float moveZ = Mathf.Clamp(actions.ContinuousActions[1], -1f, 1f);
-        float turn = Mathf.Clamp(actions.ContinuousActions[2], -1f, 1f);
-        float paddleRotation = Mathf.Clamp(actions.ContinuousActions[3], -1f, 1f);
+        float paddleRotation = Mathf.Clamp(actions.ContinuousActions[2], -1f, 1f);
         moveInput = new Vector2(moveX, moveZ);
-        turnInput = turn;
         paddleRotationInput = paddleRotation;
 
         // Check if ball hit a wall (went out of bounds)
         Vector3 ballPos = ballTransform.localPosition;
-        if (ballPos.y < -1f || Mathf.Abs(ballPos.x) > 5f || Mathf.Abs(ballPos.z) > 10f)
+        if (ballPos.y < -5f || Mathf.Abs(ballPos.x) > 5f || Mathf.Abs(ballPos.z) > 10f)
         {
             SetReward(-1f);
             EndEpisode();
@@ -86,23 +78,34 @@ public class HitBall : Agent
 
     private void FixedUpdate()
     {
-        Quaternion turnRotation = Quaternion.Euler(0f, turnInput * turnSpeed * Time.fixedDeltaTime, 0f);
-        rb.MoveRotation(rb.rotation * turnRotation);
-
         Vector3 move = new Vector3(moveInput.x, 0, moveInput.y) * moveSpeed * Time.fixedDeltaTime;
         rb.MovePosition(rb.position + move);
 
         if (paddleTransform != null)
         {
-            Quaternion paddleRotation = Quaternion.Euler(0f, 0f, paddleRotationInput * paddleRotationSpeed * Time.fixedDeltaTime);
-            paddleTransform.localRotation *= paddleRotation;
+            Vector3 currentEuler = paddleTransform.localEulerAngles;
+            float newZRotation = currentEuler.z + paddleRotationInput * paddleRotationSpeed * Time.fixedDeltaTime;
+            newZRotation = NormalizeAngle(newZRotation);
+            newZRotation = Mathf.Clamp(newZRotation, 0f, 45f);
+            paddleTransform.localEulerAngles = new Vector3(currentEuler.x, currentEuler.y, newZRotation);
         }
+    }
+
+    private float NormalizeAngle(float angle)
+    {
+        angle = angle % 360f;
+        if (angle > 180f) angle -= 360f;
+        if (angle < -180f) angle += 360f;
+        return angle;
     }
 
     public override void OnEpisodeBegin()
     {
-        rb.linearVelocity = Vector3.zero;
-        rb.angularVelocity = Vector3.zero;
+        if (!rb.isKinematic)
+        {
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+        }
 
         // Randomly choose left->right or right->left
         bool spawnLeft = Random.value > 0.5f;
@@ -156,7 +159,6 @@ public class HitBall : Agent
         }
 
         moveInput = Vector2.zero;
-        turnInput = 0f;
         paddleRotationInput = 0f;
 
         if (paddleTransform != null)
@@ -173,7 +175,6 @@ public class HitBall : Agent
         ActionSegment<float> continuousActions = actionsOut.ContinuousActions;
         float horizontal = 0f;
         float vertical = 0f;
-        float turn = 0f;
         float paddleRotation = 0f;
 
         if (Keyboard.current.aKey.isPressed)
@@ -192,14 +193,6 @@ public class HitBall : Agent
         {
             vertical += moveSpeed;
         }
-        if (Keyboard.current.qKey.isPressed)
-        {
-            turn -= turnSpeed;
-        }
-        if (Keyboard.current.eKey.isPressed)
-        {
-            turn += turnSpeed;
-        }
         if (Keyboard.current.upArrowKey.isPressed)
         {
             paddleRotation -= paddleRotationSpeed;
@@ -211,8 +204,7 @@ public class HitBall : Agent
 
         continuousActions[0] = horizontal;
         continuousActions[1] = vertical;
-        continuousActions[2] = turn;
-        continuousActions[3] = paddleRotation;
+        continuousActions[2] = paddleRotation;
     }
 
     
