@@ -1,35 +1,4 @@
 {
-    "HitBall": {
-        "checkpoints": [
-            {
-                "steps": 499938,
-                "file_path": "results/ppo/HitBall/HitBall-499938.onnx",
-                "reward": 7.730410100332374,
-                "creation_time": 1777058127.5291781,
-                "auxillary_file_paths": [
-                    "results/ppo/HitBall/HitBall-499938.pt"
-                ]
-            },
-            {
-                "steps": 500002,
-                "file_path": "results/ppo/HitBall/HitBall-500002.onnx",
-                "reward": 7.730410100332374,
-                "creation_time": 1777058127.5428,
-                "auxillary_file_paths": [
-                    "results/ppo/HitBall/HitBall-500002.pt"
-                ]
-            }
-        ],
-        "final_checkpoint": {
-            "steps": 500002,
-            "file_path": "results/ppo/HitBall.onnx",
-            "reward": 7.730410100332374,
-            "creation_time": 1777058127.5428,
-            "auxillary_file_paths": [
-                "results/ppo/HitBall/HitBall-500002.pt"
-            ]
-        }
-    },
     "metadata": {
         "stats_format_version": "0.3.0",
         "mlagents_version": "1.1.0",

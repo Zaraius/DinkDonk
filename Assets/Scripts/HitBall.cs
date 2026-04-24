@@ -33,6 +33,7 @@ public class HitBall : Agent
     private bool ballWasInOpponentCourtLastFrame = false;
     private bool ballJustHit = false;
     private bool firstBounceChecked = false;
+    private bool opponentSideBounceRewardGiven = false;
 
 
     private void Start()
@@ -90,7 +91,7 @@ public class HitBall : Agent
         if (ballInOpponentCourt != ballWasInOpponentCourtLastFrame)
         {
             bounceCount = 0;
-            Debug.Log($"Ball crossed half-court. Bounce count reset to 0");
+            // Debug.Log($"Ball crossed half-court. Bounce count reset to 0");
         }
         ballWasInOpponentCourtLastFrame = ballInOpponentCourt;
 
@@ -102,7 +103,7 @@ public class HitBall : Agent
         if (ballAtGround && ballWasAboveGroundLastFrame)
         {
             bounceCount++;
-            Debug.Log($"Ground bounce: {bounceCount}");
+            // Debug.Log($"Ground bounce: {bounceCount}");
 
             // Check first bounce bounds after paddle hit
             if (ballJustHit && !firstBounceChecked)
@@ -118,6 +119,15 @@ public class HitBall : Agent
                     EndEpisode();
                     return;
                 }
+                ballJustHit = false;
+            }
+
+            // Reward if ball bounces on opponent's side after return
+            if (ballJustHit && ballPos.z > 0f && !opponentSideBounceRewardGiven)
+            {
+                opponentSideBounceRewardGiven = true;
+                SetReward(20f);
+                Debug.Log($"Ball landed on opponent's side! +20 reward");
                 ballJustHit = false;
             }
 
@@ -242,6 +252,7 @@ public class HitBall : Agent
         ballWasAboveGroundLastFrame = false;
         ballJustHit = false;
         firstBounceChecked = false;
+        opponentSideBounceRewardGiven = false;
 
         if (paddleTransform != null)
         {
