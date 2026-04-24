@@ -3,7 +3,7 @@ using UnityEngine;
 public class Paddle : MonoBehaviour
 {
     private HitBall hitBallAgent;
-    [SerializeField] private float hitPowerMultiplier = 0.01;
+    [SerializeField] private float hitPowerMultiplier = 0.01f;
     [SerializeField] private float minHitSpeed = 0.5f;
     private const float maxUpwardForce = 0.65f;
     private const float maxTiltAngle = 45f;
