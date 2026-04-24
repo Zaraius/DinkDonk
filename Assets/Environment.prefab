@@ -668,7 +668,7 @@ Transform:
   m_GameObject: {fileID: 4495733696161198664}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.7071072, z: -0, w: 0.7071065}
-  m_LocalPosition: {x: -5.54, y: 0.19676, z: -9.94}
+  m_LocalPosition: {x: -1.94, y: 0.19676, z: 4.76}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -772,7 +772,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4495733696161198664}
   serializedVersion: 5
-  m_Mass: 0.00001
+  m_Mass: 0.0001
   m_LinearDamping: 0
   m_AngularDamping: 0
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -806,7 +806,6 @@ GameObject:
   - component: {fileID: 7348349631747919632}
   - component: {fileID: 3618457897765342793}
   - component: {fileID: 7989722476387593473}
-  - component: {fileID: 4860669571978178520}
   m_Layer: 0
   m_Name: Agent
   m_TagString: Untagged
@@ -898,7 +897,7 @@ Rigidbody:
   serializedVersion: 5
   m_Mass: 1
   m_LinearDamping: 0
-  m_AngularDamping: 0.05
+  m_AngularDamping: 0
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -914,7 +913,7 @@ Rigidbody:
   m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 80
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!114 &7348349631747919632
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -931,9 +930,9 @@ MonoBehaviour:
     VectorObservationSize: 6
     NumStackedVectorObservations: 1
     m_ActionSpec:
-      m_NumContinuousActions: 3
+      m_NumContinuousActions: 4
       BranchSizes: 
-    VectorActionSize: 03000000
+    VectorActionSize: 04000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
     hasUpgradedBrainParametersWithActionSpec: 1
@@ -978,29 +977,10 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   MaxStep: 1000
   ballTransform: {fileID: 3568207795157143287}
+  paddleTransform: {fileID: 7213323008741212684}
   moveSpeed: 5
   turnSpeed: 180
---- !u!65 &4860669571978178520
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4958427344804115444}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 0
-  serializedVersion: 3
-  m_Size: {x: 1.0000002, y: 2, z: 1.0000002}
-  m_Center: {x: 0, y: 0, z: 0}
+  paddleRotationSpeed: 90
 --- !u!1 &5599911934389959463
 GameObject:
   m_ObjectHideFlags: 0
@@ -1015,7 +995,7 @@ GameObject:
   - component: {fileID: 1045535909351902097}
   - component: {fileID: 7114390407758091265}
   m_Layer: 0
-  m_Name: Cube (1)
+  m_Name: Paddle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1029,13 +1009,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5599911934389959463}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.102666855, y: 0.16920011, z: 1.24}
-  m_LocalScale: {x: 0.21088704, y: 0.62403715, z: 0.64751744}
+  m_LocalRotation: {x: 0, y: 0, z: -0.18566658, w: 0.98261285}
+  m_LocalPosition: {x: -0.102666855, y: 0, z: 1.24}
+  m_LocalScale: {x: 0.21088704, y: 3.7442229, z: 3.8851044}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2860477696823064696}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -21.4}
 --- !u!33 &8678902089334860509
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -1100,7 +1080,7 @@ BoxCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5599911934389959463}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 91127c554b4c5407aa0ad2f1f795a9e2, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -1112,7 +1092,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 1.5, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &7114390407758091265
 Rigidbody:
@@ -1122,9 +1102,9 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5599911934389959463}
   serializedVersion: 5
-  m_Mass: 5
+  m_Mass: 1000
   m_LinearDamping: 0
-  m_AngularDamping: 0.05
+  m_AngularDamping: 0
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -1140,7 +1120,7 @@ Rigidbody:
   m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 2
 --- !u!1 &6556884990968768355
 GameObject:
   m_ObjectHideFlags: 0
@@ -1613,7 +1593,7 @@ GameObject:
   - component: {fileID: 9157540358799472088}
   - component: {fileID: 6761590477534566801}
   m_Layer: 0
-  m_Name: Cube
+  m_Name: Handle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1628,7 +1608,7 @@ Transform:
   m_GameObject: {fileID: 8060176358161671726}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.102666855, y: 0.12400007, z: 0.7133333}
+  m_LocalPosition: {x: -0.102666855, y: 0, z: 0.7133333}
   m_LocalScale: {x: 0.21088704, y: 0.19305643, z: 0.44099805}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1860,7 +1840,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 3
   m_Size: {x: 1.0000002, y: 1, z: 1.0000002}
-  m_Center: {x: 0, y: 1, z: 0}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &2333199066500540493
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1869,9 +1849,9 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8931579805533490089}
   serializedVersion: 5
-  m_Mass: 1000
+  m_Mass: 100
   m_LinearDamping: 0
-  m_AngularDamping: 0.05
+  m_AngularDamping: 0
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}

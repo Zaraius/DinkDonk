@@ -7,8 +7,10 @@ using UnityEngine.InputSystem;
 public class HitBall : Agent
 {
     [SerializeField] private Transform ballTransform;
+    [SerializeField] private Transform paddleTransform;
     [SerializeField] private float moveSpeed = 20f;
     [SerializeField] private float turnSpeed = 180f;
+    [SerializeField] private float paddleRotationSpeed = 90f;
     private Vector2 ballSpawnXRangeLeft = new Vector2(-2.5f, 0f);
     private Vector2 ballSpawnXRangeRight = new Vector2(0f, 2.5f);
     private Vector2 targetXRangeLeft = new Vector2(-2.25f, 0f);
@@ -18,6 +20,7 @@ public class HitBall : Agent
     private Rigidbody rb;
     private Vector2 moveInput;
     private float turnInput;
+    private float paddleRotationInput;
 
     private void Start()
     {
@@ -58,8 +61,10 @@ public class HitBall : Agent
         float moveX = Mathf.Clamp(actions.ContinuousActions[0], -1f, 1f);
         float moveZ = Mathf.Clamp(actions.ContinuousActions[1], -1f, 1f);
         float turn = Mathf.Clamp(actions.ContinuousActions[2], -1f, 1f);
+        float paddleRotation = Mathf.Clamp(actions.ContinuousActions[3], -1f, 1f);
         moveInput = new Vector2(moveX, moveZ);
         turnInput = turn;
+        paddleRotationInput = paddleRotation;
 
         // Check if ball hit a wall (went out of bounds)
         Vector3 ballPos = ballTransform.localPosition;
@@ -86,6 +91,12 @@ public class HitBall : Agent
 
         Vector3 move = new Vector3(moveInput.x, 0, moveInput.y) * moveSpeed * Time.fixedDeltaTime;
         rb.MovePosition(rb.position + move);
+
+        if (paddleTransform != null)
+        {
+            Quaternion paddleRotation = Quaternion.Euler(0f, 0f, paddleRotationInput * paddleRotationSpeed * Time.fixedDeltaTime);
+            paddleTransform.localRotation *= paddleRotation;
+        }
     }
 
     public override void OnEpisodeBegin()
@@ -100,7 +111,7 @@ public class HitBall : Agent
         Vector2 playerRange = spawnLeft ? targetXRangeRight : targetXRangeLeft;
 
         // Player starts on the opposite half of ball spawn (diagonal)
-        transform.localPosition = new Vector3(Random.Range(playerRange.x, playerRange.y), 0.3f, Random.Range(-8.5f, -7.5f));
+        transform.localPosition = new Vector3(Random.Range(playerRange.x, playerRange.y), 0.1f, Random.Range(-8.5f, -7.5f));
         rb.rotation = Quaternion.Euler(0f, 90f, 0f);
 
         Rigidbody ballRb = ballTransform.GetComponent<Rigidbody>();
@@ -146,6 +157,13 @@ public class HitBall : Agent
 
         moveInput = Vector2.zero;
         turnInput = 0f;
+        paddleRotationInput = 0f;
+
+        if (paddleTransform != null)
+        {
+            paddleTransform.localRotation = Quaternion.identity;
+        }
+
         lastDistanceToBall = Vector3.Distance(transform.localPosition, ballTransform.localPosition);
     }
 
@@ -156,20 +174,21 @@ public class HitBall : Agent
         float horizontal = 0f;
         float vertical = 0f;
         float turn = 0f;
+        float paddleRotation = 0f;
 
-        if (Keyboard.current.aKey.isPressed || Keyboard.current.leftArrowKey.isPressed)
+        if (Keyboard.current.aKey.isPressed)
         {
             horizontal -= moveSpeed;
         }
-        if (Keyboard.current.dKey.isPressed || Keyboard.current.rightArrowKey.isPressed)
+        if (Keyboard.current.dKey.isPressed)
         {
             horizontal += moveSpeed;
         }
-        if (Keyboard.current.sKey.isPressed || Keyboard.current.downArrowKey.isPressed)
+        if (Keyboard.current.sKey.isPressed)
         {
             vertical -= moveSpeed;
         }
-        if (Keyboard.current.wKey.isPressed || Keyboard.current.upArrowKey.isPressed)
+        if (Keyboard.current.wKey.isPressed)
         {
             vertical += moveSpeed;
         }
@@ -181,10 +200,19 @@ public class HitBall : Agent
         {
             turn += turnSpeed;
         }
+        if (Keyboard.current.upArrowKey.isPressed)
+        {
+            paddleRotation -= paddleRotationSpeed;
+        }
+        if (Keyboard.current.downArrowKey.isPressed)
+        {
+            paddleRotation += paddleRotationSpeed;
+        }
 
         continuousActions[0] = horizontal;
         continuousActions[1] = vertical;
         continuousActions[2] = turn;
+        continuousActions[3] = paddleRotation;
     }
 
     
