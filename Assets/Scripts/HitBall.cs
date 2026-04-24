@@ -113,7 +113,7 @@ public class HitBall : Agent
 
                 if (!withinXBounds || !withinZBounds)
                 {
-                    Debug.Log($"First bounce out of bounds! X: {ballPos.x}, Z: {ballPos.z}");
+                    // Debug.Log($"First bounce out of bounds! X: {ballPos.x}, Z: {ballPos.z}");
                     SetReward(-3f);
                     EndEpisode();
                     return;
