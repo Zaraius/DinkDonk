@@ -1,4 +1,53 @@
 {
+    "HitBall": {
+        "checkpoints": [
+            {
+                "steps": 499993,
+                "file_path": "results/ppo/HitBall/HitBall-499993.onnx",
+                "reward": 17.02997027872578,
+                "creation_time": 1777068694.961289,
+                "auxillary_file_paths": [
+                    "results/ppo/HitBall/HitBall-499993.pt"
+                ]
+            },
+            {
+                "steps": 999994,
+                "file_path": "results/ppo/HitBall/HitBall-999994.onnx",
+                "reward": 23.468324487590042,
+                "creation_time": 1777069174.062485,
+                "auxillary_file_paths": [
+                    "results/ppo/HitBall/HitBall-999994.pt"
+                ]
+            },
+            {
+                "steps": 1499953,
+                "file_path": "results/ppo/HitBall/HitBall-1499953.onnx",
+                "reward": 24.283018735219848,
+                "creation_time": 1777069651.377242,
+                "auxillary_file_paths": [
+                    "results/ppo/HitBall/HitBall-1499953.pt"
+                ]
+            },
+            {
+                "steps": 1700885,
+                "file_path": "results/ppo/HitBall/HitBall-1700885.onnx",
+                "reward": 23.205617889594496,
+                "creation_time": 1777069848.929802,
+                "auxillary_file_paths": [
+                    "results/ppo/HitBall/HitBall-1700885.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 1700885,
+            "file_path": "results/ppo/HitBall.onnx",
+            "reward": 23.205617889594496,
+            "creation_time": 1777069848.929802,
+            "auxillary_file_paths": [
+                "results/ppo/HitBall/HitBall-1700885.pt"
+            ]
+        }
+    },
     "metadata": {
         "stats_format_version": "0.3.0",
         "mlagents_version": "1.1.0",

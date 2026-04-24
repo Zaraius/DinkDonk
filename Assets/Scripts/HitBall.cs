@@ -34,6 +34,7 @@ public class HitBall : Agent
     private bool ballJustHit = false;
     private bool firstBounceChecked = false;
     private bool opponentSideBounceRewardGiven = false;
+    private bool opponentSideReachedRewardGiven = false;
 
 
     private void Start()
@@ -92,6 +93,14 @@ public class HitBall : Agent
         {
             bounceCount = 0;
             // Debug.Log($"Ball crossed half-court. Bounce count reset to 0");
+
+            // Reward for reaching opponent's side after a hit
+            if (ballInOpponentCourt && ballJustHit && !opponentSideReachedRewardGiven)
+            {
+                opponentSideReachedRewardGiven = true;
+                SetReward(15f);
+                Debug.Log($"Ball reached opponent's court! +15 reward");
+            }
         }
         ballWasInOpponentCourtLastFrame = ballInOpponentCourt;
 
@@ -115,7 +124,7 @@ public class HitBall : Agent
                 if (!withinXBounds || !withinZBounds)
                 {
                     // Debug.Log($"First bounce out of bounds! X: {ballPos.x}, Z: {ballPos.z}");
-                    SetReward(-3f);
+                    SetReward(-0.5f);
                     EndEpisode();
                     return;
                 }
@@ -126,8 +135,8 @@ public class HitBall : Agent
             if (ballJustHit && ballPos.z > 0f && !opponentSideBounceRewardGiven)
             {
                 opponentSideBounceRewardGiven = true;
-                SetReward(20f);
-                Debug.Log($"Ball landed on opponent's side! +20 reward");
+                SetReward(50f);
+                Debug.Log($"Ball landed on opponent's side! +50 reward");
                 ballJustHit = false;
             }
 
@@ -146,7 +155,7 @@ public class HitBall : Agent
         float distanceToBall = Vector3.Distance(rb.position, ballTransform.position);
         if (distanceToBall < lastDistanceToBall)
         {
-            AddReward(0.01f);
+            AddReward(0.05f);
         }
 
         lastDistanceToBall = distanceToBall;
@@ -253,6 +262,7 @@ public class HitBall : Agent
         ballJustHit = false;
         firstBounceChecked = false;
         opponentSideBounceRewardGiven = false;
+        opponentSideReachedRewardGiven = false;
 
         if (paddleTransform != null)
         {
