@@ -171,10 +171,17 @@ public class HitBall : Agent
 
         if (ballRb != null)
         {
+            // Reset all ball physics and state
             ballRb.linearVelocity = Vector3.zero;
             ballRb.angularVelocity = Vector3.zero;
+            ballRb.linearDamping = 0f;
+            ballRb.angularDamping = 0.05f;
+
+            // Reset position and rotation
             ballTransform.localPosition = ballStartPosition;
             ballTransform.localRotation = Quaternion.identity;
+
+            // Set serve velocity
             ballRb.linearVelocity = serveVelocity;
         }
         else
