@@ -10,6 +10,13 @@ public class HitBall : Agent
     [SerializeField] private Transform paddleTransform;
     [SerializeField] private float moveSpeed = 20f;
     [SerializeField] private float paddleRotationSpeed = 90f;
+
+    // Court boundaries
+    private const float courtMinX = -2.5f;
+    private const float courtMaxX = 2.5f;
+    private const float courtMinZ = -6f;
+    private const float courtMaxZ = 6f;
+
     private Vector2 ballSpawnXRangeLeft = new Vector2(-2.5f, 0f);
     private Vector2 ballSpawnXRangeRight = new Vector2(0f, 2.5f);
     private Vector2 targetXRangeLeft = new Vector2(-2.25f, 0f);
