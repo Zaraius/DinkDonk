@@ -25,6 +25,7 @@ public class HitBall : Agent
     private const float groundLevel = -0.3f;
 
     private Rigidbody rb;
+    private Rigidbody ballRb;
     private Vector2 moveInput;
     private float paddleRotationInput;
     private int bounceCount = 0;
@@ -43,6 +44,8 @@ public class HitBall : Agent
         rb.interpolation = RigidbodyInterpolation.Interpolate;
         rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
         rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+
+        ballRb = ballTransform.GetComponent<Rigidbody>();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -83,6 +86,19 @@ public class HitBall : Agent
             SetReward(-1f);
             EndEpisode();
             return;
+        }
+
+        // Check if ball is nearly stationary (stuck or not moving)
+        if (ballRb != null)
+        {
+            float ballSpeed = ballRb.linearVelocity.magnitude;
+            if (ballSpeed < 0.1f && ballJustHit)
+            {
+                SetReward(-2f);
+                Debug.Log($"Ball too slow! Speed: {ballSpeed}");
+                EndEpisode();
+                return;
+            }
         }
 
         // Track which court the ball is in
