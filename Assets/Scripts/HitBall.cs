@@ -69,6 +69,7 @@ public class HitBall : Agent
     {
         sensor.AddObservation(transform.localPosition);
         sensor.AddObservation(ballTransform.localPosition);
+        sensor.AddObservation(ballRb.linearVelocity);
     }
 
     public override void OnActionReceived(ActionBuffers actions)
@@ -83,7 +84,7 @@ public class HitBall : Agent
         Vector3 ballPos = ballTransform.localPosition;
         if (ballPos.y < -5f || Mathf.Abs(ballPos.x) > 5f || Mathf.Abs(ballPos.z) > 10f)
         {
-            SetReward(-1f);
+            SetReward(-10f);
             EndEpisode();
             return;
         }
@@ -140,7 +141,7 @@ public class HitBall : Agent
                 if (!withinXBounds || !withinZBounds)
                 {
                     // Debug.Log($"First bounce out of bounds! X: {ballPos.x}, Z: {ballPos.z}");
-                    SetReward(-0.5f);
+                    SetReward(-15f);
                     EndEpisode();
                     return;
                 }
