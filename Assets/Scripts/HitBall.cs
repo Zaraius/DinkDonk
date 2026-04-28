@@ -36,6 +36,7 @@ public class HitBall : Agent
     private bool firstBounceChecked = false;
     private bool opponentSideBounceRewardGiven = false;
     private bool opponentSideReachedRewardGiven = false;
+    private bool playerWasOnPlayerSideLastFrame = true;
 
 
     private void Start()
@@ -105,6 +106,17 @@ public class HitBall : Agent
         // Track which court the ball is in
         ballInOpponentCourt = ballPos.z > 0f;
 
+        // Check if player crossed the midline (z=0)
+        bool playerOnPlayerSide = transform.localPosition.z < 0f;
+        if (playerWasOnPlayerSideLastFrame && !playerOnPlayerSide)
+        {
+            SetReward(-50f);
+            Debug.Log($"Player crossed the net! -50 reward");
+            EndEpisode();
+            return;
+        }
+        playerWasOnPlayerSideLastFrame = playerOnPlayerSide;
+
         // Reset bounce count when ball crosses half-court
         if (ballInOpponentCourt != ballWasInOpponentCourtLastFrame)
         {
@@ -148,13 +160,20 @@ public class HitBall : Agent
                 ballJustHit = false;
             }
 
-            // Reward if ball bounces on opponent's side after return
+            // Reward if ball bounces on opponent's side in bounds after return
             if (ballJustHit && ballPos.z > 0f && !opponentSideBounceRewardGiven)
             {
-                opponentSideBounceRewardGiven = true;
-                SetReward(50f);
-                Debug.Log($"Ball landed on opponent's side! +50 reward");
-                ballJustHit = false;
+                bool withinXBounds = ballPos.x >= courtMinX && ballPos.x <= courtMaxX;
+                bool withinZBounds = ballPos.z <= courtMaxZ;
+
+                if (withinXBounds && withinZBounds)
+                {
+                    opponentSideBounceRewardGiven = true;
+                    SetReward(50f);
+                    Debug.Log($"Ball landed on opponent's side! +50 reward");
+                    ballJustHit = false;
+                    EndEpisode();
+                }
             }
 
             // Penalty if too many bounces on player's side
