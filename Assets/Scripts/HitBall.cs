@@ -89,7 +89,7 @@ public class HitBall : Agent
         Vector3 ballPos = ballTransform.localPosition;
         if (ballPos.y < -5f || Mathf.Abs(ballPos.x) > 5f || Mathf.Abs(ballPos.z) > 10f)
         {
-            SetReward(-10f);
+            SetReward(-20f);
             EndEpisode();
             return;
         }
@@ -106,21 +106,22 @@ public class HitBall : Agent
                 return;
             }
 
-            // Track max ball height and penalize if too high
+            // Track max ball height and apply penalty based on Y range (-0 to -20)
             if (ballJustHit)
             {
                 if (ballPos.y > maxBallHeightAfterHit)
                 {
                     maxBallHeightAfterHit = ballPos.y;
-                }
 
-                // Penalize if ball reaches above 4.0
-                if (ballPos.y > 4f && !ballTrajectoryChecked)
-                {
-                    ballTrajectoryChecked = true;
-                    SetReward(-10f);
-                    Debug.Log($"Ball hit too high! Y position: {ballPos.y}");
-                    EndEpisode();
+                    // Penalty scales with Y position: 0 at y=0, -20 at y=-20
+                    if (ballPos.y < 0f && !ballTrajectoryChecked)
+                    {
+                        ballTrajectoryChecked = true;
+                        float penalty = Mathf.Clamp(ballPos.y, -20f, 0f); // Clamps to -20 to 0 range
+                        SetReward(penalty);
+                        Debug.Log($"Ball too low! Y position: {ballPos.y}, Penalty: {penalty}");
+                        EndEpisode();
+                    }
                 }
             }
         }
@@ -195,7 +196,7 @@ public class HitBall : Agent
             // Penalty if too many bounces on player's side
             if (bounceCount > 2)
             {
-                SetReward(-2f);
+                SetReward(-15f);
                 EndEpisode();
                 return;
             }
