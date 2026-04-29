@@ -55,14 +55,14 @@ public class HitBall : Agent
     {
         if(other.TryGetComponent<Wall>(out Wall wall) )
         {
-            SetReward(-1f);
+            AddReward(-1f);
             EndEpisode();
         }
     }
 
     public void OnBallHit()
     {
-        SetReward(10f);
+        AddReward(10f);
         ballJustHit = true;
         firstBounceChecked = false;
         ballTrajectoryChecked = false;
@@ -89,7 +89,7 @@ public class HitBall : Agent
         Vector3 ballPos = ballTransform.localPosition;
         if (ballPos.y < -5f || Mathf.Abs(ballPos.x) > 5f || Mathf.Abs(ballPos.z) > 10f)
         {
-            SetReward(-20f);
+            AddReward(-20f);
             EndEpisode();
             return;
         }
@@ -100,7 +100,7 @@ public class HitBall : Agent
             float ballSpeed = ballRb.linearVelocity.magnitude;
             if (ballSpeed < 0.1f && ballJustHit)
             {
-                SetReward(-2f);
+                AddReward(-2f);
                 Debug.Log($"Ball too slow! Speed: {ballSpeed}");
                 EndEpisode();
                 return;
@@ -118,7 +118,7 @@ public class HitBall : Agent
                     {
                         ballTrajectoryChecked = true;
                         float penalty = Mathf.Clamp(ballPos.y, -20f, 0f); // Clamps to -20 to 0 range
-                        SetReward(penalty);
+                        AddReward(penalty);
                         Debug.Log($"Ball too low! Y position: {ballPos.y}, Penalty: {penalty}");
                         EndEpisode();
                     }
@@ -133,7 +133,7 @@ public class HitBall : Agent
         bool playerOnPlayerSide = transform.localPosition.z < 0f;
         if (playerWasOnPlayerSideLastFrame && !playerOnPlayerSide)
         {
-            SetReward(-50f);
+            AddReward(-50f);
             Debug.Log($"Player crossed the net! -50 reward");
             EndEpisode();
             return;
@@ -144,14 +144,14 @@ public class HitBall : Agent
         if (ballInOpponentCourt != ballWasInOpponentCourtLastFrame)
         {
             bounceCount = 0;
-            // Debug.Log($"Ball crossed half-court. Bounce count reset to 0");
+            Debug.Log($"Ball crossed half-court. Bounce count reset to 0");
 
             // Reward for reaching opponent's side after a hit
             if (ballInOpponentCourt && ballJustHit && !opponentSideReachedRewardGiven)
             {
                 opponentSideReachedRewardGiven = true;
-                SetReward(15f);
-                Debug.Log($"Ball reached opponent's court! +15 reward");
+                AddReward(15f);
+                // Debug.Log($"Ball reached opponent's court! +15 reward");
             }
         }
         ballWasInOpponentCourtLastFrame = ballInOpponentCourt;
@@ -164,7 +164,7 @@ public class HitBall : Agent
         if (ballAtGround && ballWasAboveGroundLastFrame)
         {
             bounceCount++;
-            // Debug.Log($"Ground bounce: {bounceCount}");
+            Debug.Log($"Ground bounce: {bounceCount}");
 
             // Check first bounce bounds after paddle hit
             if (ballJustHit && !firstBounceChecked)
@@ -177,7 +177,7 @@ public class HitBall : Agent
                 if (ballPos.z > 0f && withinXBounds && withinZBounds && !opponentSideBounceRewardGiven)
                 {
                     opponentSideBounceRewardGiven = true;
-                    SetReward(50f);
+                    AddReward(50f);
                     Debug.Log($"Ball landed on opponent's side! +50 reward");
                     EndEpisode();
                     return;
@@ -186,7 +186,7 @@ public class HitBall : Agent
                 if (!withinXBounds || !withinZBounds)
                 {
                     // Debug.Log($"First bounce out of bounds! X: {ballPos.x}, Z: {ballPos.z}");
-                    SetReward(-15f);
+                    AddReward(-15f);
                     EndEpisode();
                     return;
                 }
@@ -194,9 +194,9 @@ public class HitBall : Agent
             }
 
             // Penalty if too many bounces on player's side
-            if (bounceCount > 2)
+            if (bounceCount > 1)
             {
-                SetReward(-15f);
+                AddReward(-15f);
                 EndEpisode();
                 return;
             }
@@ -239,6 +239,7 @@ public class HitBall : Agent
 
     public override void OnEpisodeBegin()
     {
+        SetReward(0f);
         if (!rb.isKinematic)
         {
             rb.linearVelocity = Vector3.zero;
