@@ -39,6 +39,9 @@ public class HitBall : Agent
     private bool playerWasOnPlayerSideLastFrame = true;
     private bool ballTrajectoryChecked = false;
     private float maxBallHeightAfterHit = 0f;
+    private float lastBallY = 0f;
+    private int stuckFrameCount = 0;
+    private const int stuckFrameThreshold = 30;
 
 
     private void Start()
@@ -94,34 +97,21 @@ public class HitBall : Agent
             return;
         }
 
-        // Check if ball is nearly stationary (stuck or not moving)
-        if (ballRb != null)
+        // Track max ball height and apply penalty based on Y range (-0 to -20)
+        if (ballJustHit && ballRb != null)
         {
-            float ballSpeed = ballRb.linearVelocity.magnitude;
-            if (ballSpeed < 0.1f && ballJustHit)
+            if (ballPos.y > maxBallHeightAfterHit)
             {
-                AddReward(-2f);
-                Debug.Log($"Ball too slow! Speed: {ballSpeed}");
-                EndEpisode();
-                return;
-            }
+                maxBallHeightAfterHit = ballPos.y;
 
-            // Track max ball height and apply penalty based on Y range (-0 to -20)
-            if (ballJustHit)
-            {
-                if (ballPos.y > maxBallHeightAfterHit)
+                // Penalty scales with Y position: 0 at y=0, -20 at y=-20
+                if (ballPos.y < 0f && !ballTrajectoryChecked)
                 {
-                    maxBallHeightAfterHit = ballPos.y;
-
-                    // Penalty scales with Y position: 0 at y=0, -20 at y=-20
-                    if (ballPos.y < 0f && !ballTrajectoryChecked)
-                    {
-                        ballTrajectoryChecked = true;
-                        float penalty = Mathf.Clamp(ballPos.y, -20f, 0f); // Clamps to -20 to 0 range
-                        AddReward(penalty);
-                        Debug.Log($"Ball too low! Y position: {ballPos.y}, Penalty: {penalty}");
-                        EndEpisode();
-                    }
+                    ballTrajectoryChecked = true;
+                    float penalty = Mathf.Clamp(ballPos.y, -20f, 0f); // Clamps to -20 to 0 range
+                    AddReward(penalty);
+                    Debug.Log($"Ball too low! Y position: {ballPos.y}, Penalty: {penalty}");
+                    EndEpisode();
                 }
             }
         }
@@ -208,6 +198,24 @@ public class HitBall : Agent
         {
             ballWellAboveGround = true;
         }
+
+        // Detect if ball is stuck (same Y position for too long)
+        if (Mathf.Abs(ballPos.y - lastBallY) < 0.05f && ballPos.y < groundLevel + 0.1f)
+        {
+            stuckFrameCount++;
+            if (stuckFrameCount > stuckFrameThreshold)
+            {
+                AddReward(-5f);
+                Debug.Log($"Ball stuck on ground! Stuck for {stuckFrameCount} frames");
+                EndEpisode();
+                return;
+            }
+        }
+        else
+        {
+            stuckFrameCount = 0;
+        }
+        lastBallY = ballPos.y;
 
         float distanceToBall = Vector3.Distance(rb.position, ballTransform.position);
         if (distanceToBall < lastDistanceToBall)
@@ -323,6 +331,8 @@ public class HitBall : Agent
         maxBallHeightAfterHit = 0f;
         opponentSideBounceRewardGiven = false;
         opponentSideReachedRewardGiven = false;
+        lastBallY = ballTransform.localPosition.y;
+        stuckFrameCount = 0;
 
         if (paddleTransform != null)
         {
