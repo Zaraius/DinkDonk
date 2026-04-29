@@ -936,7 +936,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 5022602860645237092, guid: 904726e8d3284463a97c7fa9cf35e6da, type: 3}
+  m_Model: {fileID: 5022602860645237092, guid: fa46e4d2e80534a62bcd60bfe71ea341, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: HitBall
