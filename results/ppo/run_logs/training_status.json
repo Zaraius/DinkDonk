@@ -36,15 +36,60 @@
                 "auxillary_file_paths": [
                     "results/ppo/HitBall/HitBall-6944229.pt"
                 ]
+            },
+            {
+                "steps": 7999977,
+                "file_path": "results/ppo/HitBall/HitBall-7999977.onnx",
+                "reward": 25.25250010748704,
+                "creation_time": 1777421387.9165509,
+                "auxillary_file_paths": [
+                    "results/ppo/HitBall/HitBall-7999977.pt"
+                ]
+            },
+            {
+                "steps": 9999987,
+                "file_path": "results/ppo/HitBall/HitBall-9999987.onnx",
+                "reward": 24.939622705837465,
+                "creation_time": 1777423040.716526,
+                "auxillary_file_paths": [
+                    "results/ppo/HitBall/HitBall-9999987.pt"
+                ]
+            },
+            {
+                "steps": 11999970,
+                "file_path": "results/ppo/HitBall/HitBall-11999970.onnx",
+                "reward": 26.80474945140074,
+                "creation_time": 1777424658.516463,
+                "auxillary_file_paths": [
+                    "results/ppo/HitBall/HitBall-11999970.pt"
+                ]
+            },
+            {
+                "steps": 13028262,
+                "file_path": "results/ppo/HitBall/HitBall-13028262.onnx",
+                "reward": 27.33040270019891,
+                "creation_time": 1777425453.664117,
+                "auxillary_file_paths": [
+                    "results/ppo/HitBall/HitBall-13028262.pt"
+                ]
+            },
+            {
+                "steps": 13349650,
+                "file_path": "results/ppo/HitBall/HitBall-13349650.onnx",
+                "reward": 34.598353698100745,
+                "creation_time": 1777426567.2990541,
+                "auxillary_file_paths": [
+                    "results/ppo/HitBall/HitBall-13349650.pt"
+                ]
             }
         ],
         "final_checkpoint": {
-            "steps": 6944229,
+            "steps": 13349650,
             "file_path": "results/ppo/HitBall.onnx",
-            "reward": 29.31932695369768,
-            "creation_time": 1777418900.791052,
+            "reward": 34.598353698100745,
+            "creation_time": 1777426567.2990541,
             "auxillary_file_paths": [
-                "results/ppo/HitBall/HitBall-6944229.pt"
+                "results/ppo/HitBall/HitBall-13349650.pt"
             ]
         }
     },
