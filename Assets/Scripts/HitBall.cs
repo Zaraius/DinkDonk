@@ -37,6 +37,8 @@ public class HitBall : Agent
     private bool opponentSideBounceRewardGiven = false;
     private bool opponentSideReachedRewardGiven = false;
     private bool playerWasOnPlayerSideLastFrame = true;
+    private bool ballTrajectoryChecked = false;
+    private float maxBallHeightAfterHit = 0f;
 
 
     private void Start()
@@ -63,6 +65,8 @@ public class HitBall : Agent
         SetReward(10f);
         ballJustHit = true;
         firstBounceChecked = false;
+        ballTrajectoryChecked = false;
+        maxBallHeightAfterHit = 0f;
     }
 
 
@@ -85,7 +89,7 @@ public class HitBall : Agent
         Vector3 ballPos = ballTransform.localPosition;
         if (ballPos.y < -5f || Mathf.Abs(ballPos.x) > 5f || Mathf.Abs(ballPos.z) > 10f)
         {
-            SetReward(-10f);
+            SetReward(-20f);
             EndEpisode();
             return;
         }
@@ -100,6 +104,25 @@ public class HitBall : Agent
                 Debug.Log($"Ball too slow! Speed: {ballSpeed}");
                 EndEpisode();
                 return;
+            }
+
+            // Track max ball height and apply penalty based on Y range (-0 to -20)
+            if (ballJustHit)
+            {
+                if (ballPos.y > maxBallHeightAfterHit)
+                {
+                    maxBallHeightAfterHit = ballPos.y;
+
+                    // Penalty scales with Y position: 0 at y=0, -20 at y=-20
+                    if (ballPos.y < 0f && !ballTrajectoryChecked)
+                    {
+                        ballTrajectoryChecked = true;
+                        float penalty = Mathf.Clamp(ballPos.y, -20f, 0f); // Clamps to -20 to 0 range
+                        SetReward(penalty);
+                        Debug.Log($"Ball too low! Y position: {ballPos.y}, Penalty: {penalty}");
+                        EndEpisode();
+                    }
+                }
             }
         }
 
@@ -150,6 +173,16 @@ public class HitBall : Agent
                 bool withinXBounds = ballPos.x >= courtMinX && ballPos.x <= courtMaxX;
                 bool withinZBounds = ballPos.z >= courtMinZ && ballPos.z <= courtMaxZ;
 
+                // Check if landed on opponent's side
+                if (ballPos.z > 0f && withinXBounds && withinZBounds && !opponentSideBounceRewardGiven)
+                {
+                    opponentSideBounceRewardGiven = true;
+                    SetReward(50f);
+                    Debug.Log($"Ball landed on opponent's side! +50 reward");
+                    EndEpisode();
+                    return;
+                }
+
                 if (!withinXBounds || !withinZBounds)
                 {
                     // Debug.Log($"First bounce out of bounds! X: {ballPos.x}, Z: {ballPos.z}");
@@ -160,26 +193,10 @@ public class HitBall : Agent
                 ballJustHit = false;
             }
 
-            // Reward if ball bounces on opponent's side in bounds after return
-            if (ballJustHit && ballPos.z > 0f && !opponentSideBounceRewardGiven)
-            {
-                bool withinXBounds = ballPos.x >= courtMinX && ballPos.x <= courtMaxX;
-                bool withinZBounds = ballPos.z <= courtMaxZ;
-
-                if (withinXBounds && withinZBounds)
-                {
-                    opponentSideBounceRewardGiven = true;
-                    SetReward(50f);
-                    Debug.Log($"Ball landed on opponent's side! +50 reward");
-                    ballJustHit = false;
-                    EndEpisode();
-                }
-            }
-
             // Penalty if too many bounces on player's side
             if (bounceCount > 2)
             {
-                SetReward(-2f);
+                SetReward(-15f);
                 EndEpisode();
                 return;
             }
@@ -297,6 +314,8 @@ public class HitBall : Agent
         ballWasAboveGroundLastFrame = false;
         ballJustHit = false;
         firstBounceChecked = false;
+        ballTrajectoryChecked = false;
+        maxBallHeightAfterHit = 0f;
         opponentSideBounceRewardGiven = false;
         opponentSideReachedRewardGiven = false;
 
