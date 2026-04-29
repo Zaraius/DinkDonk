@@ -29,7 +29,7 @@ public class HitBall : Agent
     private Vector2 moveInput;
     private float paddleRotationInput;
     private int bounceCount = 0;
-    private bool ballWasAboveGroundLastFrame = false;
+    private bool ballWellAboveGround = false;
     private bool ballInOpponentCourt = false;
     private bool ballWasInOpponentCourtLastFrame = false;
     private bool ballJustHit = false;
@@ -156,14 +156,15 @@ public class HitBall : Agent
         }
         ballWasInOpponentCourtLastFrame = ballInOpponentCourt;
 
-        // Debug.Log("y: " + ballPos.y);
-        // Debug.Log("ballWasAboveGroundLastFrame: " + ballWasAboveGroundLastFrame);
-        // Debug.Log("ballAtGround: " + (Mathf.Abs(ballPos.y - groundLevel) < 0.1f));
-        // Detect ground bounce (ball at Y = -0.3)
+        // Detect ground bounce (ball at Y = -0.3) with hysteresis
         bool ballAtGround = Mathf.Abs(ballPos.y - groundLevel) < 0.1f;
-        if (ballAtGround && ballWasAboveGroundLastFrame)
+        bool ballAboveThreshold = ballPos.y > groundLevel + 0.3f;
+
+        // Only allow bounce if ball was well above ground, preventing multiple detections from same bounce
+        if (ballAtGround && ballWellAboveGround)
         {
             bounceCount++;
+            ballWellAboveGround = false;
             Debug.Log($"Ground bounce: {bounceCount}");
 
             // Check first bounce bounds after paddle hit
@@ -202,8 +203,11 @@ public class HitBall : Agent
             }
         }
 
-        // Update ball height tracking
-        ballWasAboveGroundLastFrame = ballPos.y > groundLevel;
+        // Update ball height tracking with hysteresis
+        if (ballAboveThreshold)
+        {
+            ballWellAboveGround = true;
+        }
 
         float distanceToBall = Vector3.Distance(rb.position, ballTransform.position);
         if (distanceToBall < lastDistanceToBall)
@@ -312,7 +316,7 @@ public class HitBall : Agent
         moveInput = Vector2.zero;
         paddleRotationInput = 0f;
         bounceCount = 0;
-        ballWasAboveGroundLastFrame = false;
+        ballWellAboveGround = false;
         ballJustHit = false;
         firstBounceChecked = false;
         ballTrajectoryChecked = false;
