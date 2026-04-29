@@ -41,7 +41,7 @@ public class HitBall : Agent
     private float maxBallHeightAfterHit = 0f;
     private float lastBallY = 0f;
     private int stuckFrameCount = 0;
-    private const int stuckFrameThreshold = 30;
+    private const int stuckFrameThreshold = 5;
 
 
     private void Start()
@@ -65,6 +65,17 @@ public class HitBall : Agent
 
     public void OnBallHit()
     {
+        Vector3 ballPos = ballTransform.localPosition;
+
+        // Penalty if hitting ball twice on player's side
+        if (ballJustHit && ballPos.z < 0f)
+        {
+            AddReward(-20f);
+            Debug.Log($"Ball hit twice on player's side! -20 reward");
+            EndEpisode();
+            return;
+        }
+
         AddReward(10f);
         ballJustHit = true;
         firstBounceChecked = false;
