@@ -2,31 +2,49 @@
     "HitBall": {
         "checkpoints": [
             {
-                "steps": 1999992,
-                "file_path": "results/ppo/HitBall/HitBall-1999992.onnx",
-                "reward": 24.412209380504695,
-                "creation_time": 1777093308.207443,
+                "steps": 1999977,
+                "file_path": "results/ppo/HitBall/HitBall-1999977.onnx",
+                "reward": 27.78374156626788,
+                "creation_time": 1777415472.710728,
                 "auxillary_file_paths": [
-                    "results/ppo/HitBall/HitBall-1999992.pt"
+                    "results/ppo/HitBall/HitBall-1999977.pt"
                 ]
             },
             {
-                "steps": 3217805,
-                "file_path": "results/ppo/HitBall/HitBall-3217805.onnx",
-                "reward": 26.22335579343027,
-                "creation_time": 1777094517.8388019,
+                "steps": 3999999,
+                "file_path": "results/ppo/HitBall/HitBall-3999999.onnx",
+                "reward": 27.52808972289053,
+                "creation_time": 1777416877.739478,
                 "auxillary_file_paths": [
-                    "results/ppo/HitBall/HitBall-3217805.pt"
+                    "results/ppo/HitBall/HitBall-3999999.pt"
+                ]
+            },
+            {
+                "steps": 5999989,
+                "file_path": "results/ppo/HitBall/HitBall-5999989.onnx",
+                "reward": 29.048666845798493,
+                "creation_time": 1777418239.104964,
+                "auxillary_file_paths": [
+                    "results/ppo/HitBall/HitBall-5999989.pt"
+                ]
+            },
+            {
+                "steps": 6944229,
+                "file_path": "results/ppo/HitBall/HitBall-6944229.onnx",
+                "reward": 29.31932695369768,
+                "creation_time": 1777418900.791052,
+                "auxillary_file_paths": [
+                    "results/ppo/HitBall/HitBall-6944229.pt"
                 ]
             }
         ],
         "final_checkpoint": {
-            "steps": 3217805,
+            "steps": 6944229,
             "file_path": "results/ppo/HitBall.onnx",
-            "reward": 26.22335579343027,
-            "creation_time": 1777094517.8388019,
+            "reward": 29.31932695369768,
+            "creation_time": 1777418900.791052,
             "auxillary_file_paths": [
-                "results/ppo/HitBall/HitBall-3217805.pt"
+                "results/ppo/HitBall/HitBall-6944229.pt"
             ]
         }
     },
