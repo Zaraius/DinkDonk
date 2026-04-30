@@ -42,6 +42,7 @@ public class HitBall : Agent
     private float lastBallY = 0f;
     private int stuckFrameCount = 0;
     private const int stuckFrameThreshold = 5;
+    private int currentEpisodeNumber = 0;
 
 
     private void Start()
@@ -52,6 +53,11 @@ public class HitBall : Agent
         rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
 
         ballRb = ballTransform.GetComponent<Rigidbody>();
+    }
+
+    public int GetCurrentEpisodeNumber()
+    {
+        return currentEpisodeNumber;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -262,12 +268,10 @@ public class HitBall : Agent
 
     public override void OnEpisodeBegin()
     {
+        currentEpisodeNumber++;
         SetReward(0f);
-        if (!rb.isKinematic)
-        {
-            rb.linearVelocity = Vector3.zero;
-            rb.angularVelocity = Vector3.zero;
-        }
+        rb.linearVelocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
 
         // Randomly choose left->right or right->left
         bool spawnLeft = Random.value > 0.5f;
@@ -317,11 +321,6 @@ public class HitBall : Agent
             // Reset position and rotation
             ballTransform.localPosition = ballStartPosition;
             ballTransform.localRotation = Quaternion.identity;
-
-            // Explicitly reset Y velocity/force
-            Vector3 resetVelocity = ballRb.linearVelocity;
-            resetVelocity.y = 0f;
-            ballRb.linearVelocity = resetVelocity;
 
             // Set serve velocity
             ballRb.linearVelocity = serveVelocity;

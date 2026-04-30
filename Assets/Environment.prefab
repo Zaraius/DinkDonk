@@ -1077,7 +1077,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 5022602860645237092, guid: 1e71238aa52e14c2f9ab6888c15284f7, type: 3}
+  m_Model: {fileID: 5022602860645237092, guid: ac1dffc904a104c108b23d762f351168, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: HitBall
@@ -1121,6 +1121,8 @@ MonoBehaviour:
   paddleTransform: {fileID: 7213323008741212684}
   moveSpeed: 5
   paddleRotationSpeed: 90
+  serveStartPosition: {x: 0, y: 1, z: 8}
+  serveTargetPosition: {x: 0, y: -0.3, z: -5}
 --- !u!1 &5599911934389959463
 GameObject:
   m_ObjectHideFlags: 0
