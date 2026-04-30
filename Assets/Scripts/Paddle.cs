@@ -9,10 +9,26 @@ public class Paddle : MonoBehaviour
     private const float maxTiltAngle = 45f;
 
     private int lastHitEpisode = -1;
+    private int ballContactFrames = 0;
+    private const int maxContactFrames = 5;
 
     private void Start()
     {
         hitBallAgent = GetComponentInParent<HitBall>();
+    }
+
+    private void OnCollisionStay(Collision collision)
+    {
+        if (!collision.gameObject.TryGetComponent<Ball>(out _)) return;
+        ballContactFrames++;
+        if (ballContactFrames > maxContactFrames)
+            hitBallAgent.OnBallHeldOnPaddle();
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.TryGetComponent<Ball>(out _))
+            ballContactFrames = 0;
     }
 
     private float NormalizeAngle(float angle)
@@ -31,6 +47,8 @@ public class Paddle : MonoBehaviour
             {
                 return;
             }
+
+            ballContactFrames = 0;
 
             // Only process hits in the current episode, not from previous episodes
             int currentEpisode = hitBallAgent.GetCurrentEpisodeNumber();

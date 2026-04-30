@@ -71,6 +71,13 @@ public class HitBall : Agent
     // Called by Paddle.cs on ball contact
     // ---------------------------------------------------------------
 
+    public void OnBallHeldOnPaddle()
+    {
+        AddReward(-20f);
+        Debug.Log("Ball held on paddle too long! -20 reward");
+        EndEpisode();
+    }
+
     public void OnBallHit()
     {
         Vector3 ballPos = ballTransform.localPosition;
