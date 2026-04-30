@@ -8,6 +8,8 @@ public class Paddle : MonoBehaviour
     private const float maxUpwardForce = 0.65f;
     private const float maxTiltAngle = 45f;
 
+    private int lastHitEpisode = -1;
+
     private void Start()
     {
         hitBallAgent = GetComponentInParent<HitBall>();
@@ -25,10 +27,20 @@ public class Paddle : MonoBehaviour
     {
         if (collision.gameObject.TryGetComponent<Ball>(out _))
         {
-            if (hitBallAgent != null)
+            if (hitBallAgent == null)
             {
-                hitBallAgent.OnBallHit();
+                return;
             }
+
+            // Only process hits in the current episode, not from previous episodes
+            int currentEpisode = hitBallAgent.GetCurrentEpisodeNumber();
+            if (lastHitEpisode == currentEpisode)
+            {
+                return;
+            }
+            lastHitEpisode = currentEpisode;
+
+            hitBallAgent.OnBallHit();
 
             Rigidbody ballRb = collision.rigidbody;
             if (ballRb != null)
@@ -67,6 +79,7 @@ public class Paddle : MonoBehaviour
                 hitForce.y += upwardForce;
 
                 ballRb.AddForce(hitForce, ForceMode.Impulse);
+                Debug.Log($"Ball hit with force: {hitForce}, frame: {Time.frameCount}");
             }
         }
     }
