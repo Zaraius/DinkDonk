@@ -40,7 +40,7 @@ public class HitBall : Agent
     private bool playerWasOnPlayerSideLastFrame = true;
     private float lastBallY = 0f;
     private int stuckFrameCount = 0;
-    private const int stuckFrameThreshold = 5;
+    private const int stuckFrameThreshold = 10;
     private int currentEpisodeNumber = 0;
 
     // ---------------------------------------------------------------
@@ -158,7 +158,7 @@ public class HitBall : Agent
 
         // ── 4. Bounce detection (with hysteresis) ─────────────────────
         bool ballAtGround       = Mathf.Abs(ballPos.y - groundLevel) < 0.1f;
-        bool ballAboveThreshold = ballPos.y > groundLevel + 0.3f;
+        bool ballAboveThreshold = ballPos.y > (groundLevel + 0.1f);
 
         if (ballAtGround && ballWellAboveGround)
         {
@@ -209,7 +209,7 @@ public class HitBall : Agent
             ballWellAboveGround = true;
 
         // ── 5. Stuck-ball detection ───────────────────────────────────
-        if (Mathf.Abs(ballPos.y - lastBallY) < 0.05f && ballPos.y < groundLevel + 0.1f)
+        if (Mathf.Abs(ballPos.y - lastBallY) < 0.005f)
         {
             stuckFrameCount++;
             if (stuckFrameCount > stuckFrameThreshold)
@@ -259,8 +259,6 @@ public class HitBall : Agent
     public override void OnEpisodeBegin()
     {
         currentEpisodeNumber++;
-        rb.linearVelocity  = Vector3.zero;
-        rb.angularVelocity = Vector3.zero;
 
         bool spawnLeft    = Random.value > 0.5f;
         Vector2 spawnRange  = spawnLeft ? ballSpawnXRangeLeft  : ballSpawnXRangeRight;
@@ -291,9 +289,7 @@ public class HitBall : Agent
         if (bRb != null)
         {
             bRb.linearVelocity  = Vector3.zero;
-            bRb.angularVelocity = Vector3.zero;
             bRb.linearDamping   = 0f;
-            bRb.angularDamping  = 0.05f;
 
             ballTransform.localPosition = ballStartPosition;
             ballTransform.localRotation = Quaternion.identity;

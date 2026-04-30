@@ -79,7 +79,6 @@ public class Paddle : MonoBehaviour
                 hitForce.y += upwardForce;
 
                 ballRb.AddForce(hitForce, ForceMode.Impulse);
-                Debug.Log($"Ball hit with force: {hitForce}, frame: {Time.frameCount}");
             }
         }
     }
