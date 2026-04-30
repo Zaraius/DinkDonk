@@ -3,6 +3,7 @@ using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 using UnityEngine.InputSystem;
+
 [RequireComponent(typeof(Rigidbody))]
 public class HitBall : Agent
 {
@@ -17,10 +18,10 @@ public class HitBall : Agent
     private const float courtMinZ = -6f;
     private const float courtMaxZ = 6f;
 
-    private Vector2 ballSpawnXRangeLeft = new Vector2(-2.5f, 0f);
+    private Vector2 ballSpawnXRangeLeft  = new Vector2(-2.5f, 0f);
     private Vector2 ballSpawnXRangeRight = new Vector2(0f, 2.5f);
-    private Vector2 targetXRangeLeft = new Vector2(-2.25f, 0f);
-    private Vector2 targetXRangeRight = new Vector2(0f, 2.25f);
+    private Vector2 targetXRangeLeft    = new Vector2(-2.25f, 0f);
+    private Vector2 targetXRangeRight   = new Vector2(0f, 2.25f);
     private float lastDistanceToBall;
     private const float groundLevel = -0.3f;
 
@@ -37,13 +38,14 @@ public class HitBall : Agent
     private bool opponentSideBounceRewardGiven = false;
     private bool opponentSideReachedRewardGiven = false;
     private bool playerWasOnPlayerSideLastFrame = true;
-    private bool ballTrajectoryChecked = false;
-    private float maxBallHeightAfterHit = 0f;
     private float lastBallY = 0f;
     private int stuckFrameCount = 0;
     private const int stuckFrameThreshold = 5;
     private int currentEpisodeNumber = 0;
 
+    // ---------------------------------------------------------------
+    // Unity lifecycle
+    // ---------------------------------------------------------------
 
     private void Start()
     {
@@ -51,23 +53,23 @@ public class HitBall : Agent
         rb.interpolation = RigidbodyInterpolation.Interpolate;
         rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
         rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
-
         ballRb = ballTransform.GetComponent<Rigidbody>();
     }
 
-    public int GetCurrentEpisodeNumber()
-    {
-        return currentEpisodeNumber;
-    }
+    public int GetCurrentEpisodeNumber() => currentEpisodeNumber;
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.TryGetComponent<Wall>(out Wall wall) )
+        if (other.TryGetComponent<Wall>(out Wall wall))
         {
             AddReward(-1f);
             EndEpisode();
         }
     }
+
+    // ---------------------------------------------------------------
+    // Called by Paddle.cs on ball contact
+    // ---------------------------------------------------------------
 
     public void OnBallHit()
     {
@@ -77,153 +79,143 @@ public class HitBall : Agent
         if (ballJustHit && ballPos.z < 0f)
         {
             AddReward(-20f);
-            Debug.Log($"Ball hit twice on player's side! -20 reward");
+            Debug.Log("Ball hit twice on player's side! -20 reward");
             EndEpisode();
             return;
         }
 
         AddReward(10f);
-        ballJustHit = true;
+        ballJustHit        = true;
         firstBounceChecked = false;
-        ballTrajectoryChecked = false;
-        maxBallHeightAfterHit = 0f;
     }
 
+    // ---------------------------------------------------------------
+    // ML-Agents: observations
+    // ---------------------------------------------------------------
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        sensor.AddObservation(transform.localPosition);
-        sensor.AddObservation(ballTransform.localPosition);
-        sensor.AddObservation(ballRb.linearVelocity);
+        sensor.AddObservation(transform.localPosition);     // 3
+        sensor.AddObservation(ballTransform.localPosition); // 3
+        sensor.AddObservation(ballRb.linearVelocity);       // 3
+        // Total: 9 — Space Size unchanged
     }
+
+    // ---------------------------------------------------------------
+    // ML-Agents: actions + reward logic
+    // ---------------------------------------------------------------
 
     public override void OnActionReceived(ActionBuffers actions)
     {
-        float moveX = Mathf.Clamp(actions.ContinuousActions[0], -1f, 1f);
-        float moveZ = Mathf.Clamp(actions.ContinuousActions[1], -1f, 1f);
+        float moveX          = Mathf.Clamp(actions.ContinuousActions[0], -1f, 1f);
+        float moveZ          = Mathf.Clamp(actions.ContinuousActions[1], -1f, 1f);
         float paddleRotation = Mathf.Clamp(actions.ContinuousActions[2], -1f, 1f);
-        moveInput = new Vector2(moveX, moveZ);
-        paddleRotationInput = paddleRotation;
+        moveInput            = new Vector2(moveX, moveZ);
+        paddleRotationInput  = paddleRotation;
 
-        // Check if ball hit a wall (went out of bounds)
         Vector3 ballPos = ballTransform.localPosition;
+
+        // ── 1. Ball out of bounds ────────────────────────────────────
+        // Context-aware: if we just hit it and it went out → our fault (-100).
+        // If opponent hit it out → we win the point (+100).
         if (ballPos.y < -5f || Mathf.Abs(ballPos.x) > 5f || Mathf.Abs(ballPos.z) > 10f)
         {
-            AddReward(-20f);
+            bool weHitItOut = ballJustHit;
+            AddReward(weHitItOut ? -100f : 100f);
             EndEpisode();
             return;
         }
 
-        // Track max ball height and apply penalty based on Y range (-0 to -20)
-        if (ballJustHit && ballRb != null)
-        {
-            if (ballPos.y > maxBallHeightAfterHit)
-            {
-                maxBallHeightAfterHit = ballPos.y;
+        // REMOVED: trajectory/height penalty — ball legitimately dips when
+        // crossing the net. Out-of-bounds check above handles bad shots.
 
-                // Penalty scales with Y position: 0 at y=0, -20 at y=-20
-                if (ballPos.y < 0f && !ballTrajectoryChecked)
-                {
-                    ballTrajectoryChecked = true;
-                    float penalty = Mathf.Clamp(ballPos.y, -20f, 0f); // Clamps to -20 to 0 range
-                    AddReward(penalty);
-                    Debug.Log($"Ball too low! Y position: {ballPos.y}, Penalty: {penalty}");
-                    EndEpisode();
-                }
-            }
-        }
-
-        // Track which court the ball is in
-        ballInOpponentCourt = ballPos.z > 0f;
-
-        // Check if player crossed the midline (z=0)
+        // ── 2. Net-crossing penalty ───────────────────────────────────
         bool playerOnPlayerSide = transform.localPosition.z < 0f;
         if (playerWasOnPlayerSideLastFrame && !playerOnPlayerSide)
         {
             AddReward(-50f);
-            Debug.Log($"Player crossed the net! -50 reward");
+            Debug.Log("Player crossed the net! -50 reward");
             EndEpisode();
             return;
         }
         playerWasOnPlayerSideLastFrame = playerOnPlayerSide;
 
-        // Reset bounce count when ball crosses half-court
+        // ── 3. Track which court the ball is in ───────────────────────
+        ballInOpponentCourt = ballPos.z > 0f;
+
         if (ballInOpponentCourt != ballWasInOpponentCourtLastFrame)
         {
             bounceCount = 0;
-            Debug.Log($"Ball crossed half-court. Bounce count reset to 0");
+            Debug.Log("Ball crossed half-court. Bounce count reset to 0");
 
-            // Reward for reaching opponent's side after a hit
             if (ballInOpponentCourt && ballJustHit && !opponentSideReachedRewardGiven)
             {
                 opponentSideReachedRewardGiven = true;
                 AddReward(15f);
-                // Debug.Log($"Ball reached opponent's court! +15 reward");
             }
         }
         ballWasInOpponentCourtLastFrame = ballInOpponentCourt;
 
-        // Detect ground bounce (ball at Y = -0.3) with hysteresis
-        bool ballAtGround = Mathf.Abs(ballPos.y - groundLevel) < 0.1f;
+        // ── 4. Bounce detection (with hysteresis) ─────────────────────
+        bool ballAtGround       = Mathf.Abs(ballPos.y - groundLevel) < 0.1f;
         bool ballAboveThreshold = ballPos.y > groundLevel + 0.3f;
 
-        // Only allow bounce if ball was well above ground, preventing multiple detections from same bounce
         if (ballAtGround && ballWellAboveGround)
         {
             bounceCount++;
             ballWellAboveGround = false;
             Debug.Log($"Ground bounce: {bounceCount}");
 
-            // Check first bounce bounds after paddle hit
             if (ballJustHit && !firstBounceChecked)
             {
                 firstBounceChecked = true;
                 bool withinXBounds = ballPos.x >= courtMinX && ballPos.x <= courtMaxX;
                 bool withinZBounds = ballPos.z >= courtMinZ && ballPos.z <= courtMaxZ;
 
-                // Check if landed on opponent's side
+                // Good shot — landed in opponent's court, rally continues
                 if (ballPos.z > 0f && withinXBounds && withinZBounds && !opponentSideBounceRewardGiven)
                 {
                     opponentSideBounceRewardGiven = true;
-                    AddReward(50f);
-                    Debug.Log($"Ball landed on opponent's side! +50 reward");
+                    AddReward(5f); // reduced from 50f — no EndEpisode, rally continues
+                    Debug.Log("Ball landed on opponent's side! +5 reward");
+                    ballJustHit = false;
+                    return;
+                }
+
+                // First bounce out of bounds — fault
+                if (!withinXBounds || !withinZBounds)
+                {
+                    AddReward(-100f); // raised from -15f, symmetric with win reward
+                    Debug.Log("First bounce out of bounds! -100 reward");
                     EndEpisode();
                     return;
                 }
 
-                if (!withinXBounds || !withinZBounds)
-                {
-                    // Debug.Log($"First bounce out of bounds! X: {ballPos.x}, Z: {ballPos.z}");
-                    AddReward(-15f);
-                    EndEpisode();
-                    return;
-                }
                 ballJustHit = false;
             }
 
-            // Penalty if too many bounces on player's side
+            // Double bounce = failed to return = point lost
+            // Changed from > 2 to > 1 — two bounces is already a fault in pickleball
             if (bounceCount > 1)
             {
-                AddReward(-15f);
+                AddReward(-100f); // raised from -15f, symmetric with win reward
+                Debug.Log("Double bounce — point lost! -100 reward");
                 EndEpisode();
                 return;
             }
         }
 
-        // Update ball height tracking with hysteresis
         if (ballAboveThreshold)
-        {
             ballWellAboveGround = true;
-        }
 
-        // Detect if ball is stuck (same Y position for too long)
+        // ── 5. Stuck-ball detection ───────────────────────────────────
         if (Mathf.Abs(ballPos.y - lastBallY) < 0.05f && ballPos.y < groundLevel + 0.1f)
         {
             stuckFrameCount++;
             if (stuckFrameCount > stuckFrameThreshold)
             {
                 AddReward(-5f);
-                Debug.Log($"Ball stuck on ground! Stuck for {stuckFrameCount} frames");
+                Debug.Log($"Ball stuck on ground for {stuckFrameCount} frames");
                 EndEpisode();
                 return;
             }
@@ -234,14 +226,16 @@ public class HitBall : Agent
         }
         lastBallY = ballPos.y;
 
+        // ── 6. Small shaping: move toward ball ───────────────────────
         float distanceToBall = Vector3.Distance(rb.position, ballTransform.position);
         if (distanceToBall < lastDistanceToBall)
-        {
             AddReward(0.05f);
-        }
-
         lastDistanceToBall = distanceToBall;
     }
+
+    // ---------------------------------------------------------------
+    // Unity physics update
+    // ---------------------------------------------------------------
 
     private void FixedUpdate()
     {
@@ -258,72 +252,52 @@ public class HitBall : Agent
         }
     }
 
-    private float NormalizeAngle(float angle)
-    {
-        angle = angle % 360f;
-        if (angle > 180f) angle -= 360f;
-        if (angle < -180f) angle += 360f;
-        return angle;
-    }
+    // ---------------------------------------------------------------
+    // ML-Agents: episode reset
+    // ---------------------------------------------------------------
 
     public override void OnEpisodeBegin()
     {
         currentEpisodeNumber++;
-        SetReward(0f);
-        rb.linearVelocity = Vector3.zero;
+        rb.linearVelocity  = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
 
-        // Randomly choose left->right or right->left
-        bool spawnLeft = Random.value > 0.5f;
-        Vector2 spawnRange = spawnLeft ? ballSpawnXRangeLeft : ballSpawnXRangeRight;
-        Vector2 targetRange = spawnLeft ? targetXRangeRight : targetXRangeLeft;
-        Vector2 playerRange = spawnLeft ? targetXRangeRight : targetXRangeLeft;
+        bool spawnLeft    = Random.value > 0.5f;
+        Vector2 spawnRange  = spawnLeft ? ballSpawnXRangeLeft  : ballSpawnXRangeRight;
+        Vector2 targetRange = spawnLeft ? targetXRangeRight    : targetXRangeLeft;
+        Vector2 playerRange = spawnLeft ? targetXRangeRight    : targetXRangeLeft;
 
-        // Player starts on the opposite half of ball spawn (diagonal)
-        transform.localPosition = new Vector3(Random.Range(playerRange.x, playerRange.y), 0.1f, Random.Range(-8.5f, -7.5f));
+        transform.localPosition = new Vector3(
+            Random.Range(playerRange.x, playerRange.y), 0.1f, Random.Range(-8.5f, -7.5f));
         rb.rotation = Quaternion.Euler(0f, 90f, 0f);
 
-        Rigidbody ballRb = ballTransform.GetComponent<Rigidbody>();
+        Rigidbody bRb = ballTransform.GetComponent<Rigidbody>();
 
         Vector3 ballStartPosition = new Vector3(
-            Random.Range(spawnRange.x, spawnRange.y),
-            1f,
-            8f
-        );
+            Random.Range(spawnRange.x, spawnRange.y), 1f, 8f);
 
-        // Target landing zone: z: -7.5 to -2.5, y: -0.3
         float targetX = Random.Range(targetRange.x, targetRange.y);
         float targetZ = Random.Range(-7.5f, -2.5f);
-        float targetY = -0.3f;
-        Vector3 targetPosition = new Vector3(targetX, targetY, targetZ);
+        Vector3 targetPosition = new Vector3(targetX, -0.3f, targetZ);
 
-        // Calculate required velocity for projectile motion
         float timeOfFlight = 1.2f;
         float g = Physics.gravity.y;
 
-        // Vertical velocity needed to reach target Y at timeOfFlight
-        float vy = (targetPosition.y - ballStartPosition.y - 0.5f * g * timeOfFlight * timeOfFlight) / timeOfFlight;
-
-        // Horizontal velocities
+        float vy = (targetPosition.y - ballStartPosition.y
+                    - 0.5f * g * timeOfFlight * timeOfFlight) / timeOfFlight;
         float vx = (targetPosition.x - ballStartPosition.x) / timeOfFlight;
         float vz = (targetPosition.z - ballStartPosition.z) / timeOfFlight;
 
-        Vector3 serveVelocity = new Vector3(vx, vy, vz);
-
-        if (ballRb != null)
+        if (bRb != null)
         {
-            // Reset all ball physics and state
-            ballRb.linearVelocity = Vector3.zero;
-            ballRb.angularVelocity = Vector3.zero;
-            ballRb.linearDamping = 0f;
-            ballRb.angularDamping = 0.05f;
+            bRb.linearVelocity  = Vector3.zero;
+            bRb.angularVelocity = Vector3.zero;
+            bRb.linearDamping   = 0f;
+            bRb.angularDamping  = 0.05f;
 
-            // Reset position and rotation
             ballTransform.localPosition = ballStartPosition;
             ballTransform.localRotation = Quaternion.identity;
-
-            // Set serve velocity
-            ballRb.linearVelocity = serveVelocity;
+            bRb.linearVelocity = new Vector3(vx, vy, vz);
         }
         else
         {
@@ -331,66 +305,53 @@ public class HitBall : Agent
             ballTransform.localRotation = Quaternion.identity;
         }
 
-        moveInput = Vector2.zero;
-        paddleRotationInput = 0f;
-        bounceCount = 0;
-        ballWellAboveGround = false;
-        ballJustHit = false;
-        firstBounceChecked = false;
-        ballTrajectoryChecked = false;
-        maxBallHeightAfterHit = 0f;
-        opponentSideBounceRewardGiven = false;
-        opponentSideReachedRewardGiven = false;
-        lastBallY = ballTransform.localPosition.y;
-        stuckFrameCount = 0;
+        moveInput                       = Vector2.zero;
+        paddleRotationInput             = 0f;
+        bounceCount                     = 0;
+        ballWellAboveGround             = false;
+        ballJustHit                     = false;
+        firstBounceChecked              = false;
+        opponentSideBounceRewardGiven   = false;
+        opponentSideReachedRewardGiven  = false;
+        ballInOpponentCourt             = false;
+        ballWasInOpponentCourtLastFrame = false;
+        playerWasOnPlayerSideLastFrame  = true;
+        lastBallY                       = ballTransform.localPosition.y;
+        stuckFrameCount                 = 0;
 
         if (paddleTransform != null)
-        {
             paddleTransform.localRotation = Quaternion.identity;
-        }
 
         lastDistanceToBall = Vector3.Distance(transform.localPosition, ballTransform.localPosition);
     }
 
+    // ---------------------------------------------------------------
+    // ML-Agents: human control for testing
+    // ---------------------------------------------------------------
 
     public override void Heuristic(in ActionBuffers actionsOut)
     {
-        ActionSegment<float> continuousActions = actionsOut.ContinuousActions;
-        float horizontal = 0f;
-        float vertical = 0f;
-        float paddleRotation = 0f;
+        ActionSegment<float> ca = actionsOut.ContinuousActions;
 
-        if (Keyboard.current.aKey.isPressed)
-        {
-            horizontal -= moveSpeed;
-        }
-        if (Keyboard.current.dKey.isPressed)
-        {
-            horizontal += moveSpeed;
-        }
-        if (Keyboard.current.sKey.isPressed)
-        {
-            vertical -= moveSpeed;
-        }
-        if (Keyboard.current.wKey.isPressed)
-        {
-            vertical += moveSpeed;
-        }
-        if (Keyboard.current.upArrowKey.isPressed)
-        {
-            paddleRotation -= paddleRotationSpeed;
-        }
-        if (Keyboard.current.downArrowKey.isPressed)
-        {
-            paddleRotation += paddleRotationSpeed;
-        }
+        ca[0] = (Keyboard.current.dKey.isPressed ? 1f : 0f)
+              - (Keyboard.current.aKey.isPressed ? 1f : 0f);
 
-        continuousActions[0] = horizontal;
-        continuousActions[1] = vertical;
-        continuousActions[2] = paddleRotation;
+        ca[1] = (Keyboard.current.wKey.isPressed ? 1f : 0f)
+              - (Keyboard.current.sKey.isPressed ? 1f : 0f);
+
+        ca[2] = (Keyboard.current.downArrowKey.isPressed ? 1f : 0f)
+              - (Keyboard.current.upArrowKey.isPressed   ? 1f : 0f);
     }
 
-    
-    
+    // ---------------------------------------------------------------
+    // Helpers
+    // ---------------------------------------------------------------
 
+    private float NormalizeAngle(float angle)
+    {
+        angle = angle % 360f;
+        if (angle >  180f) angle -= 360f;
+        if (angle < -180f) angle += 360f;
+        return angle;
+    }
 }
