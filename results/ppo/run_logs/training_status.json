@@ -72,15 +72,33 @@
                 "auxillary_file_paths": [
                     "results/ppo/HitBall/HitBall-14798982.pt"
                 ]
+            },
+            {
+                "steps": 15999998,
+                "file_path": "results/ppo/HitBall/HitBall-15999998.onnx",
+                "reward": 22.991539928396392,
+                "creation_time": 1777577899.091946,
+                "auxillary_file_paths": [
+                    "results/ppo/HitBall/HitBall-15999998.pt"
+                ]
+            },
+            {
+                "steps": 17529545,
+                "file_path": "results/ppo/HitBall/HitBall-17529545.onnx",
+                "reward": 33.041823897721635,
+                "creation_time": 1777578928.2080052,
+                "auxillary_file_paths": [
+                    "results/ppo/HitBall/HitBall-17529545.pt"
+                ]
             }
         ],
         "final_checkpoint": {
-            "steps": 14798982,
+            "steps": 17529545,
             "file_path": "results/ppo/HitBall.onnx",
-            "reward": null,
-            "creation_time": 1777487699.4727318,
+            "reward": 33.041823897721635,
+            "creation_time": 1777578928.2080052,
             "auxillary_file_paths": [
-                "results/ppo/HitBall/HitBall-14798982.pt"
+                "results/ppo/HitBall/HitBall-17529545.pt"
             ]
         }
     },
