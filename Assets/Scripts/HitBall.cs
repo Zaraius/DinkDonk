@@ -152,7 +152,7 @@ public class HitBall : Agent
         if (ballInOpponentCourt != ballWasInOpponentCourtLastFrame)
         {
             bounceCount = 0;
-            Debug.Log("Ball crossed half-court. Bounce count reset to 0");
+            // Debug.Log("Ball crossed half-court. Bounce count reset to 0");
 
             if (ballInOpponentCourt && ballJustHit && !opponentSideReachedRewardGiven)
             {
@@ -169,7 +169,7 @@ public class HitBall : Agent
         {
             bounceCount++;
             ballWellAboveGround = false;
-            Debug.Log($"Ground bounce: {bounceCount}");
+            // Debug.Log($"Ground bounce: {bounceCount}");
 
             if (ballJustHit && !firstBounceChecked)
             {
@@ -184,6 +184,7 @@ public class HitBall : Agent
                     AddReward(100f);
                     Debug.Log("Ball landed on opponent's side! +100 reward");
                     ballJustHit = false;
+                    EndEpisode();
                     return;
                 }
 
