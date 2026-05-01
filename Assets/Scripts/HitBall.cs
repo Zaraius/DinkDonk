@@ -62,7 +62,7 @@ public class HitBall : Agent
     {
         if (other.TryGetComponent<Wall>(out Wall wall))
         {
-            AddReward(-1f);
+            AddReward(-50f);
             EndEpisode();
         }
     }
@@ -91,7 +91,7 @@ public class HitBall : Agent
             return;
         }
 
-        AddReward(10f);
+        AddReward(20f);
         ballJustHit        = true;
         firstBounceChecked = false;
     }
@@ -125,10 +125,9 @@ public class HitBall : Agent
         // ── 1. Ball out of bounds ────────────────────────────────────
         // Context-aware: if we just hit it and it went out → our fault (-100).
         // If opponent hit it out → we win the point (+100).
-        if (ballPos.y < -5f || Mathf.Abs(ballPos.x) > 5f || Mathf.Abs(ballPos.z) > 10f)
+        if (ballPos.y < -5f)
         {
-            bool weHitItOut = ballJustHit;
-            AddReward(weHitItOut ? -100f : 100f);
+            if (ballJustHit) AddReward(-150f);
             EndEpisode();
             return;
         }
@@ -158,7 +157,6 @@ public class HitBall : Agent
             if (ballInOpponentCourt && ballJustHit && !opponentSideReachedRewardGiven)
             {
                 opponentSideReachedRewardGiven = true;
-                AddReward(15f);
             }
         }
         ballWasInOpponentCourtLastFrame = ballInOpponentCourt;
@@ -183,8 +181,8 @@ public class HitBall : Agent
                 if (ballPos.z > 0f && withinXBounds && withinZBounds && !opponentSideBounceRewardGiven)
                 {
                     opponentSideBounceRewardGiven = true;
-                    AddReward(5f); // reduced from 50f — no EndEpisode, rally continues
-                    Debug.Log("Ball landed on opponent's side! +5 reward");
+                    AddReward(100f);
+                    Debug.Log("Ball landed on opponent's side! +100 reward");
                     ballJustHit = false;
                     return;
                 }
@@ -192,8 +190,8 @@ public class HitBall : Agent
                 // First bounce out of bounds — fault
                 if (!withinXBounds || !withinZBounds)
                 {
-                    AddReward(-100f); // raised from -15f, symmetric with win reward
-                    Debug.Log("First bounce out of bounds! -100 reward");
+                    AddReward(-150f);
+                    Debug.Log("First bounce out of bounds! -150 reward");
                     EndEpisode();
                     return;
                 }
@@ -205,8 +203,8 @@ public class HitBall : Agent
             // Changed from > 2 to > 1 — two bounces is already a fault in pickleball
             if (bounceCount > 1)
             {
-                AddReward(-100f); // raised from -15f, symmetric with win reward
-                Debug.Log("Double bounce — point lost! -100 reward");
+                AddReward(-150f);
+                Debug.Log("Double bounce — point lost! -150 reward");
                 EndEpisode();
                 return;
             }

@@ -36,15 +36,51 @@
                 "auxillary_file_paths": [
                     "results/ppo/HitBall/HitBall-7747347.pt"
                 ]
+            },
+            {
+                "steps": 7999970,
+                "file_path": "results/ppo/HitBall/HitBall-7999970.onnx",
+                "reward": -20.56134444550306,
+                "creation_time": 1777652029.504508,
+                "auxillary_file_paths": [
+                    "results/ppo/HitBall/HitBall-7999970.pt"
+                ]
+            },
+            {
+                "steps": 9999993,
+                "file_path": "results/ppo/HitBall/HitBall-9999993.onnx",
+                "reward": 28.58014453242345,
+                "creation_time": 1777653201.912802,
+                "auxillary_file_paths": [
+                    "results/ppo/HitBall/HitBall-9999993.pt"
+                ]
+            },
+            {
+                "steps": 11999973,
+                "file_path": "results/ppo/HitBall/HitBall-11999973.onnx",
+                "reward": 22.843254224412025,
+                "creation_time": 1777654454.019073,
+                "auxillary_file_paths": [
+                    "results/ppo/HitBall/HitBall-11999973.pt"
+                ]
+            },
+            {
+                "steps": 13054620,
+                "file_path": "results/ppo/HitBall/HitBall-13054620.onnx",
+                "reward": 21.1816834005979,
+                "creation_time": 1777655069.415531,
+                "auxillary_file_paths": [
+                    "results/ppo/HitBall/HitBall-13054620.pt"
+                ]
             }
         ],
         "final_checkpoint": {
-            "steps": 7747347,
+            "steps": 13054620,
             "file_path": "results/ppo/HitBall.onnx",
-            "reward": null,
-            "creation_time": 1777601420.4737139,
+            "reward": 21.1816834005979,
+            "creation_time": 1777655069.415531,
             "auxillary_file_paths": [
-                "results/ppo/HitBall/HitBall-7747347.pt"
+                "results/ppo/HitBall/HitBall-13054620.pt"
             ]
         }
     },
